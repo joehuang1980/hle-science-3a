@@ -1,526 +1,882 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#fff8e7">
-<title>南一三上生字聽寫輪盤</title>
+<meta name="apple-mobile-web-app-title" content="風力與風向">
+<meta name="theme-color" content="#4FA3D9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8E%8F%3C/text%3E%3C/svg%3E">
+<title>3-1 風力與風向｜學習心智圖拖拉挑戰</title>
 <style>
-:root {
-  --bg:#fff8e7; --card:#ffffff; --ink:#24313d; --muted:#66727f;
-  --accent:#f59e0b; --accent2:#2563eb; --good:#15803d; --bad:#b91c1c;
-  --line:#e6e0d5; --soft:#fff3c7; --shadow:0 12px 30px rgba(36,49,61,.10);
-}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
-body{padding:calc(14px + env(safe-area-inset-top)) 14px calc(22px + env(safe-area-inset-bottom))}
-button,input,select,summary{font:inherit}
-button{touch-action:manipulation}
-.wrap{max-width:980px;margin:auto}
-.hero{display:flex;gap:14px;align-items:center;justify-content:space-between;margin:2px 0 14px}
-.hero h1{font-size:clamp(24px,5vw,38px);margin:0;line-height:1.1}
-.hero p{margin:6px 0 0;color:var(--muted);font-size:14px}
-.badge{background:#fff;border:1px solid var(--line);padding:9px 12px;border-radius:999px;white-space:nowrap;font-weight:800}
-.grid{display:grid;grid-template-columns:minmax(280px,1fr) minmax(320px,1.1fr);gap:14px}
-@media(max-width:760px){.grid{grid-template-columns:1fr} .hero{align-items:flex-start;flex-direction:column}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px}
-.card h2{margin:0 0 12px;font-size:20px}
-.small{font-size:13px;color:var(--muted)}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.field{display:grid;gap:6px;margin-bottom:12px}
-label{font-weight:700;font-size:14px}
-input[type=text],input[type=number],select,textarea{width:100%;border:1px solid #cfd6dc;border-radius:14px;padding:12px;background:#fff;color:var(--ink);font-size:16px}
-.lesson-list{display:flex;flex-wrap:wrap;gap:8px}
-.lesson-chip{position:relative}
-.lesson-chip input{position:absolute;opacity:0;pointer-events:none}
-.lesson-chip span{display:block;padding:10px 13px;border:1px solid #d9d4c9;border-radius:999px;background:#fff;font-weight:800;min-width:54px;text-align:center}
-.lesson-chip input:checked+span{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
-.checkline{display:flex;gap:9px;align-items:center;padding:10px 12px;border-radius:14px;background:#f7f8fa}
-.btn{border:0;border-radius:16px;padding:13px 16px;font-weight:900;cursor:pointer;min-height:48px}
-.btn.primary{background:var(--accent);color:#2b2105}
-.btn.blue{background:var(--accent2);color:#fff}
-.btn.good{background:var(--good);color:#fff}
-.btn.bad{background:var(--bad);color:#fff}
-.btn.ghost{background:#f4f5f7;color:var(--ink);border:1px solid #d9dde1}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.full{width:100%}
-.wheel-wrap{display:grid;place-items:center;position:relative;margin:2px auto 10px;max-width:390px}
-#wheel{width:min(78vw,360px);height:min(78vw,360px);max-width:360px;max-height:360px;display:block}
-.pointer{position:absolute;top:0;left:50%;transform:translate(-50%,-7px);width:0;height:0;
- border-left:18px solid transparent;border-right:18px solid transparent;border-top:0;border-bottom:32px solid #ef4444;filter:drop-shadow(0 3px 2px rgba(0,0,0,.18))}
-.center-dot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:white;border:7px solid #27364a;display:grid;place-items:center;font-size:23px;font-weight:1000}
-.progressline{height:10px;background:#eceff2;border-radius:999px;overflow:hidden;margin:8px 0}
-.progressbar{height:100%;background:#22c55e;width:0%;transition:width .25s}
-.question{text-align:center;background:linear-gradient(180deg,#fffaf0,#fff);border:1px dashed #e0b65b;border-radius:20px;padding:16px;margin-top:12px}
-.qstate{font-size:15px;color:var(--muted);font-weight:800}
-.answer{font-size:clamp(40px,10vw,72px);font-weight:1000;letter-spacing:.08em;margin:10px 0}
-.answer .target{color:#dc2626;text-decoration:underline;text-decoration-thickness:.09em;text-underline-offset:.12em}
-.hidden-answer{font-size:clamp(30px,8vw,54px);font-weight:1000;letter-spacing:.14em;margin:16px 0;color:#9aa3ad}
-.note{background:#f8fafc;border-left:4px solid #60a5fa;padding:10px 12px;border-radius:10px;margin:10px 0;font-size:14px}
-.pills{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:8px 0}
-.pill{padding:6px 10px;border-radius:999px;background:#eef2ff;font-size:13px;font-weight:800}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-.stat{background:#f8fafc;border-radius:16px;padding:10px;text-align:center}
-.stat b{display:block;font-size:22px}
-.result-list{display:flex;flex-wrap:wrap;gap:8px}
-.result-word{padding:8px 10px;border-radius:12px;background:#fff1f2;border:1px solid #fecdd3;font-weight:900}
-details{margin-top:14px}
-summary{cursor:pointer;font-weight:900;padding:10px 2px}
-.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;max-height:370px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:9px 10px;border-bottom:1px solid #ece9e2;text-align:left;white-space:nowrap}
-th{position:sticky;top:0;background:#fffaf0;z-index:1}
-footer{text-align:center;color:var(--muted);font-size:12px;margin:18px 0 4px}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
- background:#1f2937;color:#fff;padding:11px 16px;border-radius:14px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.sep{height:1px;background:var(--line);margin:14px 0}
-code{background:#f1f5f9;padding:2px 5px;border-radius:6px}
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden; background: #CFE8F7; color: #263238;
+    font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "Heiti TC", sans-serif;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  }
+  #app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+  #viewport { flex: 1; position: relative; overflow: hidden; }
+  #stage {
+    position: absolute; left: 0; top: 0; width: 1333px; height: 750px; transform-origin: 0 0;
+    background: #EEF7FD; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(11, 59, 92, .25);
+  }
+  #stage.cover { background: #4FA3D9; }
+  .layer { position: absolute; inset: 0; }
+  .cards { pointer-events: none; }
+  svg.draw { position: absolute; left: 0; top: 0; width: 1333px; height: 750px; pointer-events: none; }
+  svg text { font-family: inherit; }
+  .abs { position: absolute; }
+
+  /* header */
+  .badge { position: absolute; left: 50px; top: 30px; width: 62px; height: 62px; border-radius: 50%; color: #fff;
+    font-size: 33px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .title { position: absolute; left: 130px; top: 30px; height: 62px; display: flex; align-items: center;
+    font-size: 42px; font-weight: 700; color: #1B4F72; white-space: nowrap; }
+  .crumb { position: absolute; left: 1055px; top: 36px; width: 228px; height: 50px; border-radius: 25px; background: #fff;
+    border: 1.5px solid #B9D7EA; color: #1B4F72; font-weight: 700; font-size: 19px;
+    display: flex; align-items: center; justify-content: center; }
+
+  /* mind-map pieces */
+  .pill { position: absolute; display: flex; align-items: center; gap: 7px; padding: 0 22px; border: 2px solid;
+    border-radius: 18px; white-space: nowrap; font-size: 28px; }
+  .node { position: absolute; border-radius: 30px; color: #fff; font-weight: 700; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; line-height: 1.25; }
+  .center { position: absolute; border-radius: 50%; background: #1B4F72; color: #fff; font-weight: 700; display: flex;
+    flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.2; }
+  .note { position: absolute; background: #fff; border: 2px solid; border-radius: 15px; padding: 10px 14px;
+    display: flex; flex-direction: column; justify-content: center; font-size: 21px; line-height: 1.45; }
+  .note .nh { font-weight: 700; }
+  .cap { position: absolute; text-align: center; font-size: 21px; }
+
+  /* slots & cards */
+  .slot { display: inline-block; flex: none; height: 60px; border: 3px dashed; border-radius: 12px; background: #fff;
+    transition: background .2s, transform .2s; cursor: pointer; outline: none; }
+  .slot.abs { position: absolute; }
+  .slot.over { background: #FFF6CC; transform: scale(1.06); }
+  .slot.bad { animation: bad .5s; }
+  .slot.targetable { animation: pulse 1.1s ease-in-out infinite; }
+  .slot.hint, .card.hint { animation: hintGlow .6s ease-in-out 3; }
+  .slot:focus-visible, .card:focus-visible { box-shadow: 0 0 0 4px #2E86DE; }
+  .tray { position: absolute; left: 50px; top: 568px; width: 1233px; height: 150px; background: #fff;
+    border: 2px solid #B9D7EA; border-radius: 20px; }
+  .tray .lbl { position: absolute; left: 25px; top: 10px; font-size: 19px; color: #546E7A; white-space: nowrap; }
+  .card {
+    position: absolute; height: 60px; border-radius: 12px; background: #FFD54F; border: 2px solid #D9A400; color: #4E342E;
+    font-weight: 700; font-size: 30px; display: flex; align-items: center; justify-content: center; white-space: nowrap;
+    box-shadow: 2px 3px 5px rgba(138, 109, 0, .35); cursor: grab; pointer-events: auto; touch-action: none; z-index: 5;
+    transition: left .28s ease, top .28s ease, transform .15s, box-shadow .15s, background .25s; outline: none;
+  }
+  .card.dragging { transition: transform .1s, box-shadow .1s; transform: scale(1.08) rotate(-2deg);
+    box-shadow: 4px 12px 20px rgba(0, 0, 0, .3); z-index: 30; cursor: grabbing; }
+  .card.selected { transform: translateY(-8px) scale(1.06); z-index: 20;
+    box-shadow: 0 0 0 4px #fff, 0 0 0 8px #2E86DE, 3px 10px 16px rgba(0, 0, 0, .25); }
+  .card.placed { background: #C8E6C9; border-color: #43A047; color: #1B5E20; box-shadow: none; cursor: default; }
+  .card.placed::after { content: "✓"; position: absolute; right: -10px; top: -12px; width: 26px; height: 26px;
+    border-radius: 50%; background: #43A047; color: #fff; font-size: 17px; display: flex; align-items: center;
+    justify-content: center; }
+  .card.shake { animation: shake .38s; }
+  .card.demo { cursor: default; pointer-events: none; animation: demoMove 3.2s ease-in-out infinite; }
+
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-12px); }
+    40% { transform: translateX(12px); } 60% { transform: translateX(-8px); } 80% { transform: translateX(8px); } }
+  @keyframes bad { 0%,100% { background: #fff; } 30% { background: #FFCDD2; } }
+  @keyframes pulse { 0%,100% { background: #fff; } 50% { background: #E3F2FD; } }
+  @keyframes hintGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); } 50% { box-shadow: 0 0 0 9px rgba(255, 179, 0, .85); } }
+  @keyframes demoMove { 0%,15% { transform: translate(0,0); } 45%,75% { transform: translate(237px,0); background: #C8E6C9; border-color: #43A047; }
+    90%,100% { transform: translate(0,0); } }
+
+  /* cover */
+  .cloud { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, .35); }
+  .startBtn { position: absolute; left: 70px; top: 585px; width: 330px; height: 84px; border: none; border-radius: 22px;
+    background: #FFD54F; color: #4E342E; font: inherit; font-size: 36px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 6px 0 #D9A400; }
+  .startBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #D9A400; }
+  .howto { position: absolute; left: 725px; top: 85px; width: 558px; height: 580px; background: #fff; border-radius: 30px;
+    box-shadow: 0 6px 16px rgba(11, 59, 92, .25); }
+  .step { position: absolute; left: 40px; display: flex; align-items: center; gap: 18px; width: 490px; font-size: 24px; line-height: 1.35; }
+  .step b { flex: none; width: 50px; height: 50px; border-radius: 50%; color: #fff; font-size: 25px; display: flex;
+    align-items: center; justify-content: center; }
+
+  /* summary */
+  .sumCard { position: absolute; width: 400px; height: 190px; background: #fff; border: 2.5px solid; border-radius: 18px; }
+  .sumCard .hd { margin: 12px 12px 8px; height: 46px; border-radius: 12px; color: #fff; font-size: 24px; font-weight: 700;
+    display: flex; align-items: center; padding: 0 12px; }
+  .sumCard ul { margin: 0; padding: 0 14px 0 34px; font-size: 19px; line-height: 1.45; }
+  .chip { position: absolute; left: 820px; top: 34px; height: 54px; padding: 0 10px 0 20px; border-radius: 27px; background: #fff;
+    border: 1.5px solid #B9D7EA; color: #1B4F72; font-weight: 700; font-size: 21px; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+  .chip button { font: inherit; font-size: 17px; border: none; border-radius: 18px; background: #E3EEF6; color: #1B4F72;
+    padding: 6px 14px; cursor: pointer; }
+
+  /* finish overlay */
+  .overlay { position: absolute; inset: 0; background: rgba(14, 52, 80, .45); display: flex; align-items: center;
+    justify-content: center; z-index: 60; animation: fade .25s; }
+  .panel { width: 560px; background: #fff; border-radius: 30px; padding: 34px 36px 38px; text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .3); animation: pop .35s; }
+  .panel h2 { margin: 0 0 4px; font-size: 46px; color: #1B4F72; }
+  .panel .stars { font-size: 64px; letter-spacing: 8px; margin: 4px 0; }
+  .panel .stars .off { filter: grayscale(1); opacity: .3; }
+  .panel p { font-size: 22px; color: #546E7A; margin: 6px 0 24px; }
+  .btn { font: inherit; font-size: 24px; font-weight: 700; border: none; border-radius: 18px; padding: 14px 28px; margin: 0 6px; cursor: pointer; }
+  .btn.primary { background: #FFD54F; color: #4E342E; box-shadow: 0 5px 0 #D9A400; }
+  .btn.ghost { background: #E3EEF6; color: #1B4F72; }
+  .confetti { position: absolute; top: -30px; width: 14px; height: 20px; border-radius: 3px; z-index: 70; pointer-events: none;
+    animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(820px) rotate(720deg); } }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes pop { from { transform: scale(.7); opacity: 0; } }
+
+  /* nav */
+  #nav { flex: none; height: 64px; display: flex; align-items: center; justify-content: flex-start; gap: 8px;
+    padding: 0 10px calc(env(safe-area-inset-bottom) * .5); overflow-x: auto; }
+  #nav button { font: inherit; border: none; border-radius: 14px; background: #fff; color: #1B4F72; font-weight: 700;
+    height: 44px; min-width: 44px; padding: 0 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12); cursor: pointer; font-size: 16px;
+    flex: none; white-space: nowrap; }
+  #nav > :first-child { margin-left: auto; }
+  #nav > :last-child { margin-right: auto; }
+  @media (max-width: 900px) {
+    #nav { gap: 5px; }
+    #nav .t { display: none; }
+    #dots { gap: 3px; }
+    #nav .dot { width: 32px; min-width: 32px; font-size: 13px; }
+  }
+  #nav button:disabled { opacity: .35; cursor: default; }
+  #dots { display: flex; gap: 5px; }
+  #nav .dot { width: 38px; min-width: 38px; padding: 0; font-size: 15px; position: relative; }
+  #nav .dot.cur { background: #1B4F72; color: #fff; }
+  #nav .dot.done::after { content: "★"; position: absolute; right: -4px; top: -7px; color: #F9A825; font-size: 16px;
+    text-shadow: 0 0 3px #fff, 0 0 3px #fff; }
+  #rotate { display: none; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: #fff; color: #1B4F72;
+    border-radius: 20px; padding: 6px 16px; font-size: 15px; box-shadow: 0 2px 6px rgba(0, 0, 0, .15); pointer-events: none; z-index: 5; }
+  @media (orientation: portrait) { #rotate { display: block; } }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="hero">
-    <div>
-      <h1>🎡 南一三上生字聽寫輪盤</h1>
-      <p>1–6 課｜聽題不看答案｜iPad 觸控友善｜可擴充詞庫</p>
-    </div>
-    <div class="badge" id="bankBadge">詞庫載入中…</div>
-  </header>
-
-  <div class="grid">
-    <section class="card" aria-labelledby="setupTitle">
-      <h2 id="setupTitle">① 設定這一輪</h2>
-      <div class="field">
-        <label for="studentName">學生姓名</label>
-        <input id="studentName" type="text" inputmode="text" placeholder="例如：宇樘" autocomplete="off">
-      </div>
-      <div class="field">
-        <label>選擇課次</label>
-        <div class="lesson-list" id="lessonList"></div>
-      </div>
-      <div class="field">
-        <label for="questionCount">本輪題數</label>
-        <select id="questionCount">
-          <option value="5">5 題</option>
-          <option value="10" selected>10 題</option>
-          <option value="15">15 題</option>
-          <option value="20">20 題</option>
-          <option value="30">30 題</option>
-          <option value="all">全部符合題目</option>
-        </select>
-      </div>
-      <label class="checkline">
-        <input id="reviewOnly" type="checkbox">
-        <span>只抽「需要再練習」的錯題</span>
-      </label>
-      <div class="field" style="margin-top:12px">
-        <label for="speechRate">朗讀速度：<span id="rateLabel">0.82×</span></label>
-        <input id="speechRate" type="range" min="0.6" max="1.05" step="0.05" value="0.82">
-      </div>
-      <button class="btn blue full" id="startBtn">開始／重新建立本輪題庫</button>
-      <div class="note">
-        輪盤不顯示語詞，避免先看到答案；抽中後會朗讀題目。若 iPad 沒有自動出聲，直接點「🔊 再聽一次」即可。
-      </div>
-
-      <details>
-        <summary>📚 查看初始詞庫</summary>
-        <div class="small" id="coverageText"></div>
-        <div class="table-wrap" style="margin-top:8px">
-          <table>
-            <thead><tr><th>課次</th><th>語詞</th><th>複習生字</th></tr></thead>
-            <tbody id="wordTable"></tbody>
-          </table>
-        </div>
-      </details>
-    </section>
-
-    <section class="card" aria-labelledby="gameTitle">
-      <h2 id="gameTitle">② 轉輪盤出題</h2>
-      <div class="row" style="justify-content:space-between">
-        <div class="small" id="sessionLabel">尚未開始</div>
-        <div class="small"><b id="remainingLabel">0</b> 題待抽</div>
-      </div>
-      <div class="progressline"><div class="progressbar" id="progressBar"></div></div>
-
-      <div class="wheel-wrap">
-        <canvas id="wheel" width="360" height="360" aria-label="聽寫題目輪盤"></canvas>
-        <div class="pointer" aria-hidden="true"></div>
-        <div class="center-dot" aria-hidden="true">?</div>
-      </div>
-      <button class="btn primary full" id="spinBtn" disabled>🎯 轉輪盤抽下一題</button>
-
-      <div class="question" id="questionPanel">
-        <div class="qstate" id="questionState">先建立本輪題庫</div>
-        <div class="hidden-answer" id="hiddenAnswer">？ ？</div>
-        <div class="answer" id="answer" hidden></div>
-        <div class="pills" id="answerMeta" hidden></div>
-        <div class="row" style="justify-content:center">
-          <button class="btn ghost" id="speakBtn" disabled>🔊 再聽一次</button>
-          <button class="btn ghost" id="revealBtn" disabled>👀 顯示答案</button>
-        </div>
-        <div class="row" id="scoreRow" style="justify-content:center;margin-top:10px" hidden>
-          <button class="btn good" id="correctBtn">✅ 答對</button>
-          <button class="btn bad" id="wrongBtn">🔁 再練習</button>
-        </div>
-      </div>
-
-      <div id="results" hidden style="margin-top:14px">
-        <div class="sep"></div>
-        <h2>③ 本輪結果</h2>
-        <div class="stats">
-          <div class="stat"><b id="rTotal">0</b><span>完成</span></div>
-          <div class="stat"><b id="rCorrect">0</b><span>答對</span></div>
-          <div class="stat"><b id="rAccuracy">0%</b><span>正確率</span></div>
-        </div>
-        <div class="small" style="margin-bottom:7px">需要再練習</div>
-        <div class="result-list" id="wrongList"></div>
-        <button class="btn ghost full" id="reviewWrongBtn" style="margin-top:10px">只練本機錯題</button>
-      </div>
-    </section>
+<div id="app">
+  <div id="viewport">
+    <div id="rotate">📱 把 iPad 橫過來，畫面會更大喔！</div>
+    <div id="stage"></div>
   </div>
-
-  <section class="card" style="margin-top:14px">
-    <details>
-      <summary>🧑‍🏫 教師／家長工具：擴充詞庫與紀錄</summary>
-      <p class="small">
-        在此 iPad 新增的語詞會儲存在瀏覽器本機。若要讓所有裝置都看到新詞，請匯出 JSON 後，以它更新 GitHub 儲存庫中的 <code>words.json</code>。
-      </p>
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
-        <div>
-          <h2 style="font-size:17px">新增一個語詞</h2>
-          <div class="field"><label for="newLesson">課次（可多課，用逗號分隔）</label><input id="newLesson" type="text" placeholder="例如：7 或 3,6"></div>
-          <div class="field"><label for="newWord">語詞</label><input id="newWord" type="text" placeholder="例如：新語詞"></div>
-          <div class="field"><label for="newTargets">要複習的生字</label><input id="newTargets" type="text" placeholder="例如：新詞"></div>
-          <button class="btn blue" id="addWordBtn">＋ 加入本機詞庫</button>
-        </div>
-        <div>
-          <h2 style="font-size:17px">詞庫檔案</h2>
-          <div class="row">
-            <button class="btn ghost" id="exportBankBtn">⬇️ 匯出 words.json</button>
-            <label class="btn ghost" for="importBankInput" style="display:inline-flex;align-items:center">⬆️ 匯入 JSON</label>
-            <input id="importBankInput" type="file" accept="application/json,.json" hidden>
-          </div>
-          <button class="btn ghost" id="resetBankBtn" style="margin-top:9px">恢復 GitHub／內建詞庫</button>
-          <div class="sep"></div>
-          <h2 style="font-size:17px">學習紀錄</h2>
-          <div class="row">
-            <button class="btn ghost" id="exportRecordBtn">⬇️ 匯出答題紀錄</button>
-            <button class="btn ghost" id="clearRecordBtn">清除本機紀錄</button>
-          </div>
-        </div>
-      </div>
-    </details>
-  </section>
-
-  <footer>
-    初始資料：南一三上 1–6 課生字＋既有累積生字。所有功能均在瀏覽器端執行，不會把學生姓名或答題紀錄上傳到伺服器。
-  </footer>
+  <nav id="nav">
+    <button id="prev" aria-label="上一頁">◀</button>
+    <div id="dots"></div>
+    <button id="next" aria-label="下一頁">▶</button>
+    <button id="hint" aria-label="提示">💡<span class="t"> 提示</span></button>
+    <button id="reset" aria-label="重來">🔄<span class="t"> 重來</span></button>
+    <button id="mute" aria-label="聲音開關">🔊</button>
+  </nav>
 </div>
-<div class="toast" id="toast"></div>
 
 <script>
-const EMBEDDED_WORDS = [{"id": "W001", "word": "泥巴", "lessons": [1], "targets": ["泥"], "note": ""}, {"id": "W002", "word": "化石", "lessons": [1], "targets": ["化"], "note": ""}, {"id": "W003", "word": "山雀", "lessons": [1], "targets": ["雀"], "note": ""}, {"id": "W004", "word": "輕快", "lessons": [1], "targets": ["輕"], "note": ""}, {"id": "W005", "word": "羽衣", "lessons": [1], "targets": ["羽", "衣"], "note": ""}, {"id": "W006", "word": "衣服", "lessons": [1], "targets": ["衣"], "note": ""}, {"id": "W007", "word": "脆皮", "lessons": [1], "targets": ["脆"], "note": ""}, {"id": "W008", "word": "頭髮", "lessons": [1], "targets": ["髮"], "note": ""}, {"id": "W009", "word": "到處", "lessons": [1], "targets": ["處"], "note": ""}, {"id": "W010", "word": "旅行", "lessons": [1], "targets": ["旅", "行"], "note": ""}, {"id": "W011", "word": "行走", "lessons": [1], "targets": ["行"], "note": ""}, {"id": "W012", "word": "平安", "lessons": [1], "targets": ["平"], "note": ""}, {"id": "W013", "word": "男生", "lessons": [1], "targets": ["男"], "note": ""}, {"id": "W014", "word": "朗讀", "lessons": [1], "targets": ["朗"], "note": ""}, {"id": "W015", "word": "滿足", "lessons": [1], "targets": ["足"], "note": ""}, {"id": "W016", "word": "走廊", "lessons": [2], "targets": ["廊"], "note": ""}, {"id": "W017", "word": "訂正", "lessons": [2], "targets": ["訂"], "note": ""}, {"id": "W018", "word": "班級", "lessons": [2], "targets": ["班", "級"], "note": ""}, {"id": "W019", "word": "約定", "lessons": [2], "targets": ["約"], "note": ""}, {"id": "W020", "word": "紛紛", "lessons": [2], "targets": ["紛", "紛"], "note": ""}, {"id": "W021", "word": "持有", "lessons": [2], "targets": ["持"], "note": ""}, {"id": "W022", "word": "記錄", "lessons": [2], "targets": ["記", "錄"], "note": ""}, {"id": "W023", "word": "聊天", "lessons": [2], "targets": ["聊"], "note": ""}, {"id": "W024", "word": "發言", "lessons": [2], "targets": ["言"], "note": ""}, {"id": "W025", "word": "熱烈", "lessons": [2], "targets": ["烈"], "note": ""}, {"id": "W026", "word": "這些", "lessons": [2], "targets": ["些"], "note": ""}, {"id": "W027", "word": "提高", "lessons": [2], "targets": ["提"], "note": ""}, {"id": "W028", "word": "發愁", "lessons": [2], "targets": ["愁"], "note": ""}, {"id": "W029", "word": "短跑", "lessons": [3], "targets": ["短"], "note": ""}, {"id": "W030", "word": "時鐘", "lessons": [3], "targets": ["鐘"], "note": ""}, {"id": "W031", "word": "鬼怪", "lessons": [3], "targets": ["鬼"], "note": ""}, {"id": "W032", "word": "熱鬧", "lessons": [3], "targets": ["鬧"], "note": ""}, {"id": "W033", "word": "準時", "lessons": [3], "targets": ["準"], "note": ""}, {"id": "W034", "word": "朝向", "lessons": [3], "targets": ["朝"], "note": ""}, {"id": "W035", "word": "舞蹈", "lessons": [3], "targets": ["蹈"], "note": ""}, {"id": "W036", "word": "表面", "lessons": [3], "targets": ["表"], "note": ""}, {"id": "W037", "word": "暢快", "lessons": [3], "targets": ["暢"], "note": ""}, {"id": "W038", "word": "無法", "lessons": [3], "targets": ["無"], "note": ""}, {"id": "W039", "word": "總是", "lessons": [3], "targets": ["總"], "note": ""}, {"id": "W040", "word": "響亮", "lessons": [3], "targets": ["響"], "note": ""}, {"id": "W041", "word": "忘記", "lessons": [2, 3], "targets": ["忘", "記"], "note": ""}, {"id": "W042", "word": "盡力", "lessons": [3], "targets": ["盡"], "note": ""}, {"id": "W043", "word": "負責", "lessons": [3, 6], "targets": ["負", "責"], "note": ""}, {"id": "W044", "word": "悶熱", "lessons": [4], "targets": ["悶"], "note": ""}, {"id": "W045", "word": "煩惱", "lessons": [4], "targets": ["煩", "惱"], "note": ""}, {"id": "W046", "word": "吵鬧", "lessons": [3, 4], "targets": ["吵", "鬧"], "note": ""}, {"id": "W047", "word": "勉強", "lessons": [4], "targets": ["勉", "強"], "note": ""}, {"id": "W048", "word": "耐心", "lessons": [4], "targets": ["耐"], "note": ""}, {"id": "W049", "word": "脾氣", "lessons": [4], "targets": ["脾"], "note": ""}, {"id": "W050", "word": "了解", "lessons": [4], "targets": ["解"], "note": ""}, {"id": "W051", "word": "中央", "lessons": [4], "targets": ["央"], "note": ""}, {"id": "W052", "word": "大霧", "lessons": [4], "targets": ["霧"], "note": ""}, {"id": "W053", "word": "緊張", "lessons": [4], "targets": ["緊"], "note": ""}, {"id": "W054", "word": "尖叫", "lessons": [4], "targets": ["尖"], "note": ""}, {"id": "W055", "word": "雖然", "lessons": [4], "targets": ["雖"], "note": ""}, {"id": "W056", "word": "嗓音", "lessons": [4], "targets": ["嗓"], "note": ""}, {"id": "W057", "word": "龍王", "lessons": [5], "targets": ["龍"], "note": ""}, {"id": "W058", "word": "沖洗", "lessons": [5], "targets": ["沖"], "note": ""}, {"id": "W059", "word": "身體", "lessons": [5], "targets": ["體"], "note": ""}, {"id": "W060", "word": "兄弟", "lessons": [5], "targets": ["兄"], "note": ""}, {"id": "W061", "word": "吐出", "lessons": [5], "targets": ["吐"], "note": ""}, {"id": "W062", "word": "轉身", "lessons": [5], "targets": ["轉"], "note": ""}, {"id": "W063", "word": "歪頭", "lessons": [5], "targets": ["歪"], "note": ""}, {"id": "W064", "word": "防水", "lessons": [5], "targets": ["防"], "note": ""}, {"id": "W065", "word": "警告", "lessons": [5], "targets": ["警"], "note": ""}, {"id": "W066", "word": "鈴聲", "lessons": [5], "targets": ["鈴"], "note": ""}, {"id": "W067", "word": "注意", "lessons": [5], "targets": ["注"], "note": ""}, {"id": "W068", "word": "人員", "lessons": [5], "targets": ["員"], "note": ""}, {"id": "W069", "word": "受傷", "lessons": [5], "targets": ["傷"], "note": ""}, {"id": "W070", "word": "死去", "lessons": [5], "targets": ["死"], "note": ""}, {"id": "W071", "word": "原諒", "lessons": [5], "targets": ["諒"], "note": ""}, {"id": "W072", "word": "開幕", "lessons": [6], "targets": ["幕"], "note": ""}, {"id": "W073", "word": "水杯", "lessons": [6], "targets": ["杯"], "note": ""}, {"id": "W074", "word": "流動", "lessons": [6], "targets": ["流"], "note": ""}, {"id": "W075", "word": "溼透", "lessons": [6], "targets": ["溼", "透"], "note": ""}, {"id": "W076", "word": "雙手", "lessons": [6], "targets": ["雙"], "note": ""}, {"id": "W077", "word": "胸口", "lessons": [6], "targets": ["胸"], "note": ""}, {"id": "W078", "word": "逃走", "lessons": [6], "targets": ["逃"], "note": ""}, {"id": "W079", "word": "辦法", "lessons": [6], "targets": ["辦"], "note": ""}, {"id": "W080", "word": "露出", "lessons": [6], "targets": ["露"], "note": ""}, {"id": "W081", "word": "問題", "lessons": [6], "targets": ["題"], "note": ""}, {"id": "W082", "word": "部分", "lessons": [6], "targets": ["部"], "note": ""}, {"id": "W083", "word": "灰白", "lessons": [6], "targets": ["灰"], "note": ""}, {"id": "W084", "word": "剪開", "lessons": [6], "targets": ["剪"], "note": ""}];
-const BASE_TARGETS = new Set("泥化雀輕羽衣脆髮處旅行平男朗足廊訂班級約紛持記錄聊言烈些提愁短鐘鬼鬧準朝蹈表暢無總響忘盡責悶煩惱吵勉強耐脾解央霧緊尖雖嗓龍沖體兄吐轉歪防警鈴注員傷死諒幕杯流溼透雙胸負逃辦露題部灰剪".split(""));
-const STORAGE = {
-  stats:"naniDictation.stats.v1", history:"naniDictation.history.v1",
-  bank:"naniDictation.bankOverride.v1", student:"naniDictation.student.v1"
-};
-const state = {
-  bank:[], source:"embedded", pool:[], remaining:[], current:null, currentRevealed:false,
-  attempts:[], spinning:false, rotation:0, sessionStarted:false, voices:[]
-};
+"use strict";
+/* ================== constants & tiny helpers ================== */
+const NS = "http://www.w3.org/2000/svg";
+const COL = { 0: "#1B4F72", 1: "#E8604C", 2: "#7B61C9", 3: "#159A8C", 4: "#EF8A17", 5: "#2E86DE", 6: "#3FA34D" };
+const TINT = { 0: "#E3EEF6", 1: "#FDECE9", 2: "#EFEBFA", 3: "#E2F4F1", 4: "#FEF1E0", 5: "#E5F0FC", 6: "#E8F5E9" };
+const CIRC = (n) => String.fromCodePoint(0x2460 + n - 1);
+const STORE = "wind31-v1";
+const $ = (s) => document.querySelector(s);
 
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-function toast(msg) {
-  const el=$("#toast"); el.textContent=msg; el.classList.add("show");
-  clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("show"),2200);
+function mk(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
 }
-function readJSON(key,fallback) {
-  try { const v=localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+const UNITLESS = new Set(["zIndex", "opacity", "fontWeight", "lineHeight", "flex"]);
+function css(e, o) {
+  for (const k in o) e.style[k] = typeof o[k] === "number" && !UNITLESS.has(k) ? o[k] + "px" : o[k];
+  return e;
 }
-function saveJSON(key,value) { localStorage.setItem(key,JSON.stringify(value)); }
-function stats() { return readJSON(STORAGE.stats,{}); }
-function normalizeBank(items) {
-  if(!Array.isArray(items)) throw new Error("詞庫 items 必須是陣列");
-  const seen=new Set();
-  return items.map((raw,i)=>{
-    const word=String(raw.word||"").trim();
-    if(!word) throw new Error(`第 ${i+1} 筆缺少 word`);
-    const id=String(raw.id||`U${i+1}-${word}`).trim();
-    let lessons=raw.lessons ?? raw.lesson ?? [];
-    if(!Array.isArray(lessons)) lessons=String(lessons).split(/[,，\s]+/);
-    lessons=[...new Set(lessons.map(Number).filter(n=>Number.isFinite(n)&&n>0))].sort((a,b)=>a-b);
-    let targets=raw.targets ?? raw.target ?? [];
-    if(Array.isArray(targets)) targets=targets.join("");
-    targets=[...new Set(String(targets).replace(/[\s,，]/g,"").split("").filter(Boolean))];
-    const finalId=seen.has(id)? `${id}-${i}` : id; seen.add(finalId);
-    return {id:finalId,word,lessons,targets,note:String(raw.note||"")};
-  });
+function shuffle(a) {
+  const r = a.slice();
+  for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+  return r;
 }
-async function loadBank() {
-  const override=readJSON(STORAGE.bank,null);
-  if(override?.items) {
-    state.bank=normalizeBank(override.items); state.source="本機自訂";
-  } else {
-    let loaded=false;
-    if(location.protocol.startsWith("http")) {
-      try {
-        const r=await fetch("./words.json",{cache:"no-store"});
-        if(r.ok) {
-          const j=await r.json();
-          state.bank=normalizeBank(j.items||j); state.source="words.json"; loaded=true;
-        }
-      } catch(e) {}
-    }
-    if(!loaded) { state.bank=normalizeBank(EMBEDDED_WORDS); state.source="內建"; }
-  }
-  refreshBankUI();
-}
-function uniqueLessons() {
-  return [...new Set(state.bank.flatMap(x=>x.lessons))].sort((a,b)=>a-b);
-}
-function renderLessons() {
-  const box=$("#lessonList"); box.innerHTML="";
-  uniqueLessons().forEach(n=>{
-    const label=document.createElement("label"); label.className="lesson-chip";
-    const input=document.createElement("input"); input.type="checkbox"; input.value=n; input.checked=n<=6;
-    input.addEventListener("change",updateEligibleHint);
-    const span=document.createElement("span"); span.textContent=`第${n}課`;
-    label.append(input,span); box.append(label);
-  });
-}
-function selectedLessons() {
-  return $$("#lessonList input:checked").map(x=>Number(x.value));
-}
-function eligibleWords() {
-  const selected=new Set(selectedLessons());
-  const s=stats();
-  return state.bank.filter(item=>item.lessons.some(l=>selected.has(l)))
-    .filter(item=>!$("#reviewOnly").checked || s[item.id]?.needsReview===true);
-}
-function updateEligibleHint() {
-  const n=eligibleWords().length;
-  $("#startBtn").textContent=`開始／重新建立本輪題庫（可用 ${n} 詞）`;
-}
-function refreshBankUI() {
-  renderLessons();
-  const targetChars=[...new Set(state.bank.flatMap(x=>x.targets))];
-  $("#bankBadge").textContent=`${state.bank.length} 個語詞`;
-  $("#coverageText").textContent=`目前詞庫：${state.bank.length} 個不重複語詞；標記 ${targetChars.length} 個複習生字。初始版完整覆蓋三上 1–6 課 90 個生字。資料來源：${state.source}。`;
-  const tbody=$("#wordTable"); tbody.innerHTML="";
-  [...state.bank].sort((a,b)=>(Math.min(...a.lessons)-Math.min(...b.lessons))||a.word.localeCompare(b.word,"zh-Hant")).forEach(item=>{
-    const tr=document.createElement("tr");
-    [item.lessons.join("、"), item.word, item.targets.join("")].forEach(t=>{const td=document.createElement("td");td.textContent=t;tr.append(td)});
-    tbody.append(tr);
-  });
-  updateEligibleHint();
-}
-function shuffle(arr) {
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
-function startSession() {
-  const name=$("#studentName").value.trim();
-  localStorage.setItem(STORAGE.student,name);
-  const eligible=eligibleWords();
-  if(!selectedLessons().length) return toast("請至少選一課");
-  if(!eligible.length) return toast($("#reviewOnly").checked ? "目前沒有需要再練習的錯題" : "沒有可用語詞");
-  const q=$("#questionCount").value;
-  const count=q==="all" ? eligible.length : Math.min(Number(q),eligible.length);
-  state.pool=shuffle(eligible).slice(0,count);
-  state.remaining=[...state.pool];
-  state.current=null; state.currentRevealed=false; state.attempts=[];
-  state.sessionStarted=true; state.spinning=false; state.rotation=0;
-  $("#results").hidden=true;
-  $("#sessionLabel").textContent=`${name||"本次"}｜${count} 題｜第 ${selectedLessons().join("、")} 課`;
-  resetQuestionPanel();
-  updateGameUI(); drawWheel();
-  $("#spinBtn").disabled=false;
-  toast("本輪題庫已建立，開始轉輪盤！");
-}
-function resetQuestionPanel() {
-  $("#questionState").textContent=state.sessionStarted ? "準備抽題" : "先建立本輪題庫";
-  $("#hiddenAnswer").hidden=false; $("#hiddenAnswer").textContent="？ ？";
-  $("#answer").hidden=true; $("#answerMeta").hidden=true; $("#scoreRow").hidden=true;
-  $("#speakBtn").disabled=true; $("#revealBtn").disabled=true;
-}
-function updateGameUI() {
-  $("#remainingLabel").textContent=state.remaining.length;
-  const done=state.attempts.length, total=state.pool.length||0;
-  $("#progressBar").style.width=total ? `${Math.round(done/total*100)}%` : "0%";
-  $("#spinBtn").disabled=!state.sessionStarted || state.spinning || !!state.current || state.remaining.length===0;
-}
-function getCanvasSize() {
-  const canvas=$("#wheel"), rect=canvas.getBoundingClientRect(), dpr=Math.min(window.devicePixelRatio||1,2);
-  const css=Math.max(260,Math.min(rect.width||360,360));
-  if(canvas.width!==Math.round(css*dpr)||canvas.height!==Math.round(css*dpr)) {
-    canvas.width=Math.round(css*dpr); canvas.height=Math.round(css*dpr);
-  }
-  return {canvas,ctx:canvas.getContext("2d"),css,dpr};
-}
-const wheelColors=["#fde68a","#bfdbfe","#bbf7d0","#fecdd3","#ddd6fe","#fed7aa","#bae6fd","#d9f99d","#fbcfe8","#c7d2fe","#ccfbf1","#fef3c7"];
-function drawWheel(rotation=state.rotation) {
-  const {canvas,ctx,css,dpr}=getCanvasSize();
-  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,css,css);
-  const cx=css/2,cy=css/2,r=css/2-8;
-  const n=Math.max(1,Math.min(state.remaining.length||12,12)), arc=Math.PI*2/n;
-  ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotation);
-  for(let i=0;i<n;i++) {
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,r,i*arc,(i+1)*arc); ctx.closePath();
-    ctx.fillStyle=wheelColors[i%wheelColors.length]; ctx.fill();
-    ctx.strokeStyle="#fff"; ctx.lineWidth=3; ctx.stroke();
-    ctx.save(); ctx.rotate((i+.5)*arc); ctx.translate(r*.67,0); ctx.rotate(Math.PI/2);
-    ctx.fillStyle="#24313d"; ctx.font=`900 ${Math.max(20,Math.min(28,css*.07))}px -apple-system`;
-    ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(i%2===0?"?":"★",0,0);ctx.restore();
-  }
-  ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.strokeStyle="#27364a";ctx.lineWidth=7;ctx.stroke();
-  ctx.restore();
-}
-function spin() {
-  if(state.spinning||state.current||!state.remaining.length) return;
-  state.spinning=true; updateGameUI(); $("#questionState").textContent="輪盤轉動中…";
-  const pick=Math.floor(Math.random()*state.remaining.length);
-  const chosen=state.remaining[pick];
-  const start=performance.now(), from=state.rotation;
-  const extra=(5+Math.random()*3)*Math.PI*2 + Math.random()*Math.PI*2;
-  const duration=1800;
-  function ease(t) { return 1-Math.pow(1-t,4); }
-  function frame(now) {
-    const t=Math.min(1,(now-start)/duration);
-    state.rotation=from+extra*ease(t); drawWheel(state.rotation);
-    if(t<1) requestAnimationFrame(frame); else {
-      state.spinning=false;
-      state.current=chosen; state.remaining.splice(pick,1); state.currentRevealed=false;
-      showHiddenQuestion(); updateGameUI(); setTimeout(()=>speakCurrent(),120);
-    }
-  }
-  requestAnimationFrame(frame);
-}
-function showHiddenQuestion() {
-  $("#questionState").textContent=`第 ${state.attempts.length+1} 題：請聽寫`;
-  $("#hiddenAnswer").hidden=false; $("#hiddenAnswer").textContent="🔒 ？ ？";
-  $("#answer").hidden=true; $("#answerMeta").hidden=true; $("#scoreRow").hidden=true;
-  $("#speakBtn").disabled=false; $("#revealBtn").disabled=false;
-}
-function chooseVoice() {
-  const voices=speechSynthesis.getVoices();
-  return voices.find(v=>/^zh-TW/i.test(v.lang)) || voices.find(v=>/^zh/i.test(v.lang)) || null;
-}
-function speakCurrent() {
-  if(!state.current) return;
-  if(!("speechSynthesis" in window)) return toast("這個瀏覽器不支援語音朗讀");
-  speechSynthesis.cancel();
-  const rate=Number($("#speechRate").value);
-  const voice=chooseVoice();
-  const u1=new SpeechSynthesisUtterance(state.current.word);
-  const u2=new SpeechSynthesisUtterance(state.current.word);
-  [u1,u2].forEach(u=>{u.lang="zh-TW";u.rate=rate;u.pitch=1; if(voice)u.voice=voice;});
-  speechSynthesis.speak(u1); speechSynthesis.speak(u2);
-}
-function reveal() {
-  if(!state.current) return;
-  state.currentRevealed=true;
-  $("#hiddenAnswer").hidden=true; $("#answer").hidden=false; $("#answerMeta").hidden=false; $("#scoreRow").hidden=false;
-  const ans=$("#answer"); ans.innerHTML="";
-  [...state.current.word].forEach(ch=>{
-    const span=document.createElement("span"); span.textContent=ch;
-    if(state.current.targets.includes(ch)) span.className="target";
-    ans.append(span);
-  });
-  $("#answerMeta").innerHTML="";
-  const a=document.createElement("span"); a.className="pill"; a.textContent=`課次：${state.current.lessons.join("、")}`;
-  const b=document.createElement("span"); b.className="pill"; b.textContent=`複習生字：${state.current.targets.join("")||"—"}`;
-  $("#answerMeta").append(a,b);
-  $("#questionState").textContent="核對答案後，請選擇結果";
-}
-function score(result) {
-  if(!state.current||!state.currentRevealed) return;
-  const s=stats(), id=state.current.id;
-  const rec=s[id]||{seen:0,correct:0,wrong:0,needsReview:false,last:null};
-  rec.seen++; rec[result==="correct"?"correct":"wrong"]++;
-  rec.needsReview=result==="wrong"; rec.last=new Date().toISOString(); rec.lastResult=result;
-  s[id]=rec; saveJSON(STORAGE.stats,s);
-  state.attempts.push({
-    id,stateWord:state.current.word,word:state.current.word,lessons:state.current.lessons,
-    targets:state.current.targets,result,at:new Date().toISOString()
-  });
-  state.current=null; state.currentRevealed=false; resetQuestionPanel(); updateGameUI(); drawWheel();
-  if(state.remaining.length===0) finishSession(); else toast(result==="correct"?"答對，繼續下一題！":"已加入再練習清單");
-}
-function finishSession() {
-  $("#spinBtn").disabled=true; $("#questionState").textContent="本輪完成！";
-  const total=state.attempts.length, correct=state.attempts.filter(x=>x.result==="correct").length;
-  const wrong=state.attempts.filter(x=>x.result==="wrong");
-  $("#rTotal").textContent=total; $("#rCorrect").textContent=correct;
-  $("#rAccuracy").textContent=total?`${Math.round(correct/total*100)}%`:"0%";
-  const list=$("#wrongList"); list.innerHTML="";
-  if(!wrong.length) { const x=document.createElement("span");x.className="small";x.textContent="本輪沒有錯題 🎉";list.append(x); }
-  else wrong.forEach(x=>{const s=document.createElement("span");s.className="result-word";s.textContent=x.word;list.append(s)});
-  $("#results").hidden=false;
-  const history=readJSON(STORAGE.history,[]);
-  history.unshift({
-    at:new Date().toISOString(),student:$("#studentName").value.trim(),lessons:selectedLessons(),
-    total,correct,accuracy:total?correct/total:0,attempts:state.attempts
-  });
-  saveJSON(STORAGE.history,history.slice(0,60));
-  $("#progressBar").style.width="100%";
-  toast("完成本輪聽寫");
-}
-function downloadJSON(filename,obj) {
-  const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json;charset=utf-8"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.append(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
-}
-function addWord() {
-  const word=$("#newWord").value.trim(), targetStr=$("#newTargets").value.trim();
-  const lessons=[...new Set($("#newLesson").value.split(/[,，\s]+/).map(Number).filter(n=>Number.isFinite(n)&&n>0))].sort((a,b)=>a-b);
-  if(!word||!lessons.length) return toast("請填寫課次與語詞");
-  const item={id:`C${Date.now()}`,word,lessons,targets:[...new Set(targetStr.replace(/[\s,，]/g,"").split("").filter(Boolean))],note:"本機新增"};
-  const next=[...state.bank,item];
-  state.bank=normalizeBank(next); saveJSON(STORAGE.bank,{version:new Date().toISOString(),items:state.bank});
-  state.source="本機自訂"; refreshBankUI();
-  $("#newWord").value=""; $("#newTargets").value=""; toast(`已加入「${word}」`);
-}
-async function importBank(file) {
+
+/* ================== storage (best effort) ================== */
+let saved = { stars: {}, page: 0, muted: false };
+try { const s = JSON.parse(localStorage.getItem(STORE)); if (s && typeof s === "object") saved = Object.assign(saved, s); } catch (e) {}
+function persist() { try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch (e) {} }
+
+/* ================== sound ================== */
+let actx = null;
+function unlockAudio() {
   try {
-    const text=await file.text(), j=JSON.parse(text), items=normalizeBank(j.items||j);
-    state.bank=items; saveJSON(STORAGE.bank,{version:new Date().toISOString(),items});
-    state.source="本機匯入"; refreshBankUI(); toast(`已匯入 ${items.length} 個語詞`);
-  } catch(e) { toast("匯入失敗："+e.message); }
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+  } catch (e) {}
 }
-function clearRecords() {
-  if(!confirm("確定要清除這台裝置的答題紀錄與錯題標記？")) return;
-  localStorage.removeItem(STORAGE.stats); localStorage.removeItem(STORAGE.history); toast("學習紀錄已清除");
+function tone(f, t0, dur, type, vol) {
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = type || "sine"; o.frequency.value = f;
+  g.gain.setValueAtTime(vol || 0.18, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+  o.connect(g); g.connect(actx.destination); o.start(t0); o.stop(t0 + dur + 0.02);
 }
-$("#startBtn").addEventListener("click",startSession);
-$("#spinBtn").addEventListener("click",spin);
-$("#speakBtn").addEventListener("click",speakCurrent);
-$("#revealBtn").addEventListener("click",reveal);
-$("#correctBtn").addEventListener("click",()=>score("correct"));
-$("#wrongBtn").addEventListener("click",()=>score("wrong"));
-$("#reviewOnly").addEventListener("change",updateEligibleHint);
-$("#speechRate").addEventListener("input",e=>$("#rateLabel").textContent=`${Number(e.target.value).toFixed(2)}×`);
-$("#reviewWrongBtn").addEventListener("click",()=>{$("#reviewOnly").checked=true;updateEligibleHint();startSession();window.scrollTo({top:0,behavior:"smooth"})});
-$("#addWordBtn").addEventListener("click",addWord);
-$("#exportBankBtn").addEventListener("click",()=>downloadJSON("words.json",{version:new Date().toISOString().slice(0,10),title:"南一生字聽寫詞庫",items:state.bank}));
-$("#importBankInput").addEventListener("change",e=>{if(e.target.files[0])importBank(e.target.files[0]);e.target.value=""});
-$("#resetBankBtn").addEventListener("click",()=>{if(confirm("恢復 GitHub／內建詞庫？本機自訂詞庫會被移除。")){localStorage.removeItem(STORAGE.bank);location.reload();}});
-$("#exportRecordBtn").addEventListener("click",()=>downloadJSON(`dictation-record-${new Date().toISOString().slice(0,10)}.json`,{stats:stats(),history:readJSON(STORAGE.history,[])}));
-$("#clearRecordBtn").addEventListener("click",clearRecords);
-window.addEventListener("resize",()=>drawWheel());
-if("speechSynthesis" in window) { speechSynthesis.onvoiceschanged=()=>{state.voices=speechSynthesis.getVoices()}; }
-$("#studentName").value=localStorage.getItem(STORAGE.student)||"";
-drawWheel();
-loadBank();
-if("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+function sound(kind) {
+  if (saved.muted || !actx) return;
+  try {
+    const t = actx.currentTime;
+    if (kind === "ok") { tone(784, t, 0.12); tone(1047, t + 0.1, 0.2); }
+    else if (kind === "bad") tone(196, t, 0.25, "square", 0.07);
+    else if (kind === "win") [523, 659, 784, 1047].forEach((f, i) => tone(f, t + i * 0.13, 0.3));
+  } catch (e) {}
 }
+
+/* ================== page context & drawing helpers ================== */
+let ctx = null;       // current page context
+let scale = 1;
+function newCtx() {
+  const stage = $("#stage");
+  stage.innerHTML = "";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 1333 750"); svg.setAttribute("class", "draw");
+  const layer = mk("div", "layer"), cards = mk("div", "layer cards");
+  stage.append(svg, layer, cards);
+  return { stage, svg, layer, cardsLayer: cards, slots: [], cards: [], placed: 0, mistakes: 0, hints: 0, done: false };
+}
+function S(name, attrs, text) {
+  const e = document.createElementNS(NS, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  ctx.svg.append(e);
+  return e;
+}
+function L(x1, y1, x2, y2, color, w, dash, extra) {
+  const a = { x1, y1, x2, y2, stroke: color, "stroke-width": w || 3, "stroke-linecap": "round" };
+  if (dash) a["stroke-dasharray"] = dash;
+  return S("line", Object.assign(a, extra || {}));
+}
+function T(x, y, text, size, fill, extra) {
+  return S("text", Object.assign({ x, y, "font-size": size, fill, "text-anchor": "middle", "dominant-baseline": "central",
+    "font-weight": 700 }, extra || {}), text);
+}
+function arrowDefs() {
+  const d = S("defs", {});
+  d.innerHTML = '<marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">' +
+    '<path d="M0,0 L10,5 L0,10 z" fill="#607D8B"/></marker>';
+}
+function blockArrow(cx, cy, len, thick, angle, color) {
+  const shaft = thick * 0.5, headLen = thick * 0.6, x0 = -len / 2, x1 = len / 2 - headLen, x2 = len / 2;
+  const pts = [[x0, -shaft / 2], [x1, -shaft / 2], [x1, -thick / 2], [x2, 0], [x1, thick / 2], [x1, shaft / 2], [x0, shaft / 2]];
+  S("polygon", { points: pts.map((p) => p.join(",")).join(" "), fill: color, transform: `translate(${cx},${cy}) rotate(${angle})` });
+}
+function div(x, y, w, h, cls, style) {
+  const e = mk("div", cls);
+  css(e, Object.assign({ left: x, top: y }, w != null ? { width: w } : {}, h != null ? { height: h } : {}, style || {}));
+  ctx.layer.append(e);
+  return e;
+}
+function header(badge, br, title, crumb = true) {
+  div(50, 30, null, null, "badge", { background: COL[br] }).textContent = badge;
+  div(130, 30, null, null, "title").textContent = title;
+  if (crumb) div(1055, 36, null, null, "crumb").textContent = "3-1 風力與風向";
+}
+function note(x, y, w, h, br, lines) {
+  const n = div(x, y, w, h, "note", { borderColor: COL[br] });
+  for (const l of lines) {
+    const p = mk("div", l.h ? "nh" : "", l.t);
+    if (l.h) p.style.color = l.c || COL[br];
+    if (l.c && !l.h) p.style.color = l.c;
+    if (l.size) p.style.fontSize = l.size + "px";
+    if (l.b) p.style.fontWeight = 700;
+    n.append(p);
+  }
+  return n;
+}
+function makeSlot(br, accept, cw) {
+  const s = mk("div", "slot");
+  css(s, { width: cw, borderColor: COL[br] });
+  s.dataset.accept = accept.join("|");
+  s.tabIndex = 0; s.setAttribute("role", "button"); s.setAttribute("aria-label", "空格");
+  s.addEventListener("click", () => onSlotTap(s));
+  s.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSlotTap(s); } });
+  ctx.slots.push(s);
+  return s;
+}
+function slotAt(x, y, cw, br, accept) {
+  const s = makeSlot(br, accept, cw);
+  s.classList.add("abs");
+  css(s, { left: x, top: y });
+  ctx.layer.append(s);
+  return s;
+}
+// sentence pill: parts = ["text", {b:"answer", any:[...]}, ...]
+function row(x, y, parts, br, o = {}) {
+  const rh = o.rh || 80;
+  const p = mk("div", "pill");
+  css(p, { left: x, top: y, height: rh, background: o.fill || TINT[br], borderColor: COL[br] });
+  for (const part of parts) {
+    if (typeof part === "string") p.append(mk("span", "seg", part));
+    else p.append(makeSlot(br, part.any || [part.b], o.cw));
+  }
+  if (o.center) {
+    const wrap = div(0, y, 1333, rh, "abs", { display: "flex", justifyContent: "center", pointerEvents: "none" });
+    css(p, { position: "relative", left: 0, top: 0, pointerEvents: "auto" });
+    wrap.append(p);
+  } else ctx.layer.append(p);
+  return p;
+}
+function branchNode(br, emoji, title) {
+  const n = div(50, 255, 255, 160, "node", { background: COL[br] });
+  n.append(css(mk("div", "", emoji), { fontSize: 42 }), css(mk("div", "", title), { fontSize: 29 }));
+  return { rx: 305, cy: 335 };
+}
+function spokes(br, x0, ys, rh) {
+  for (const y of ys) L(305, 335, x0, y + rh / 2, COL[br], 3.5);
+}
+function tray(words, cw, o = {}) {
+  const t = div(50, 568, 1233, 150, "tray");
+  t.append(mk("div", "lbl", "🃏 詞卡區：按住黃色詞卡，拖到虛線框裡" + (o.trap === false ? "" : "（小心陷阱卡！）")));
+  const order = shuffle(words);
+  const gap = Math.min(22, (1233 - 40 - order.length * cw) / (order.length - 1));
+  const total = order.length * cw + (order.length - 1) * gap;
+  let x = 50 + (1233 - total) / 2;
+  for (const w of order) {
+    const c = mk("div", "card", w);
+    css(c, { left: x, top: 628, width: cw, fontSize: o.fs || 30 });
+    c.dataset.word = w; c.dataset.hx = x; c.dataset.hy = 628;
+    c.tabIndex = 0; c.setAttribute("role", "button"); c.setAttribute("aria-label", "詞卡 " + w);
+    bindCard(c);
+    ctx.cardsLayer.append(c); ctx.cards.push(c);
+    x += cw + gap;
+  }
+}
+
+/* ================== drag & tap logic ================== */
+let drag = null, selected = null;
+function bindCard(c) {
+  c.addEventListener("pointerdown", (e) => {
+    if (c.classList.contains("placed") || ctx.done) return;
+    unlockAudio();
+    e.preventDefault();
+    try { c.setPointerCapture(e.pointerId); } catch (err) {}
+    drag = { c, id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: parseFloat(c.style.left), oy: parseFloat(c.style.top), moved: false };
+  });
+  c.addEventListener("pointermove", (e) => {
+    if (!drag || drag.c !== c || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+    if (!drag.moved) { drag.moved = true; clearSelect(); c.classList.add("dragging"); }
+    css(c, { left: drag.ox + dx / scale, top: drag.oy + dy / scale });
+    markOver(findSlot(c));
+  });
+  const end = (e, cancelled) => {
+    if (!drag || drag.c !== c || e.pointerId !== drag.id) return;
+    const moved = drag.moved;
+    drag = null;
+    c.classList.remove("dragging");
+    markOver(null);
+    if (!moved) { if (!cancelled) toggleSelect(c); return; }
+    const s = cancelled ? null : findSlot(c);
+    if (s) tryPlace(c, s); else sendHome(c);
+  };
+  c.addEventListener("pointerup", (e) => end(e, false));
+  c.addEventListener("pointercancel", (e) => end(e, true));
+  c.addEventListener("lostpointercapture", (e) => end(e, false));
+  c.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); unlockAudio(); if (!c.classList.contains("placed")) toggleSelect(c); }
+  });
+}
+function emptySlots() { return ctx.slots.filter((s) => !s.dataset.filled); }
+function findSlot(c) {
+  const r = c.getBoundingClientRect(), mx = (r.left + r.right) / 2, my = (r.top + r.bottom) / 2, pad = 16 * scale;
+  let best = null, bestArea = 0;
+  for (const s of emptySlots()) {
+    const q = s.getBoundingClientRect();
+    if (mx >= q.left - pad && mx <= q.right + pad && my >= q.top - pad && my <= q.bottom + pad) return s;
+    const ow = Math.min(r.right, q.right) - Math.max(r.left, q.left), oh = Math.min(r.bottom, q.bottom) - Math.max(r.top, q.top);
+    if (ow > 0 && oh > 0 && ow * oh > bestArea) { bestArea = ow * oh; best = s; }
+  }
+  return bestArea > 0.3 * r.width * r.height ? best : null;
+}
+let overSlot = null;
+function markOver(s) {
+  if (overSlot === s) return;
+  if (overSlot) overSlot.classList.remove("over");
+  overSlot = s;
+  if (s) s.classList.add("over");
+}
+function sendHome(c) { css(c, { left: +c.dataset.hx, top: +c.dataset.hy }); }
+function toggleSelect(c) {
+  if (selected === c) { clearSelect(); return; }
+  clearSelect();
+  selected = c;
+  c.classList.add("selected");
+  emptySlots().forEach((s) => s.classList.add("targetable"));
+}
+function clearSelect() {
+  if (selected) selected.classList.remove("selected");
+  selected = null;
+  ctx.slots.forEach((s) => s.classList.remove("targetable"));
+}
+function onSlotTap(s) {
+  if (!selected || s.dataset.filled || ctx.done) return;
+  const c = selected;
+  clearSelect();
+  tryPlace(c, s);
+}
+function tryPlace(c, s) {
+  const ok = s.dataset.accept.split("|").includes(c.dataset.word);
+  if (ok) {
+    const sr = ctx.stage.getBoundingClientRect(), q = s.getBoundingClientRect();
+    css(c, { left: (q.left - sr.left) / scale, top: (q.top - sr.top) / scale });
+    c.classList.add("placed"); c.tabIndex = -1;
+    s.dataset.filled = "1"; s.tabIndex = -1;
+    ctx.placed++;
+    sound("ok");
+    if (ctx.placed === ctx.slots.length) { ctx.done = true; setTimeout(finish, 650); }
+  } else {
+    ctx.mistakes++;
+    sound("bad");
+    s.classList.remove("bad"); void s.offsetWidth; s.classList.add("bad");
+    c.classList.add("shake");
+    setTimeout(() => { c.classList.remove("shake"); sendHome(c); }, 380);
+  }
+}
+function giveHint() {
+  if (!ctx || !ctx.slots.length || ctx.done) return;
+  const s = emptySlots()[0];
+  if (!s) return;
+  const acc = s.dataset.accept.split("|");
+  const c = ctx.cards.find((k) => !k.classList.contains("placed") && acc.includes(k.dataset.word));
+  if (!c) return;
+  ctx.hints++;
+  for (const e of [s, c]) { e.classList.remove("hint"); void e.offsetWidth; e.classList.add("hint"); }
+  setTimeout(() => { s.classList.remove("hint"); c.classList.remove("hint"); }, 1900);
+}
+function starsFor(mistakes, hints) {
+  const p = mistakes + hints;
+  return p <= 1 ? 3 : p <= 3 ? 2 : 1;
+}
+function finish() {
+  const n = starsFor(ctx.mistakes, ctx.hints);
+  saved.stars[cur] = Math.max(saved.stars[cur] || 0, n);
+  persist(); renderNav();
+  sound("win"); confetti();
+  const ov = mk("div", "overlay"), p = mk("div", "panel");
+  p.append(mk("h2", "", n === 3 ? "🎉 太厲害了！" : n === 2 ? "🎉 完成了！" : "👍 完成了！"));
+  const st = mk("div", "stars");
+  for (let i = 0; i < 3; i++) { const s = mk("span", i < n ? "" : "off", "⭐"); st.append(s); }
+  p.append(st);
+  p.append(mk("p", "", `放錯 ${ctx.mistakes} 次・用了 ${ctx.hints} 次提示`));
+  const again = mk("button", "btn ghost", "🔄 再玩一次");
+  again.onclick = () => render();
+  const nextLabel = PAGES[cur + 1] && PAGES[cur + 1].kind === "summary" ? "看總整理 ▶" : "下一頁 ▶";
+  const next = mk("button", "btn primary", nextLabel);
+  next.onclick = () => go(cur + 1);
+  p.append(again, next);
+  ov.append(p);
+  ctx.stage.append(ov);
+}
+function confetti() {
+  const colors = ["#E8604C", "#7B61C9", "#159A8C", "#EF8A17", "#2E86DE", "#3FA34D", "#FFD54F"];
+  for (let i = 0; i < 60; i++) {
+    const c = mk("div", "confetti");
+    css(c, { left: Math.random() * 1333, background: colors[i % colors.length],
+      animationDuration: 1.6 + Math.random() * 1.2 + "s", animationDelay: Math.random() * 0.4 + "s" });
+    ctx.stage.append(c);
+    setTimeout(() => c.remove(), 3400);
+  }
+}
+
+/* ================== pages ================== */
+function pCover() {
+  ctx.stage.classList.add("cover");
+  for (const [x, y, w, h] of [[430, 35, 220, 70], [-60, 635, 340, 110], [320, 670, 260, 80], [30, 25, 170, 55]]) div(x, y, w, h, "cloud");
+  div(70, 110, 125, 125, "center", { background: "#FFD54F", color: "#1B4F72", fontSize: 44 }).textContent = "3-1";
+  div(215, 145, 475, 55, "abs", { background: "#fff", borderRadius: 28, color: "#1B4F72", fontSize: 24, fontWeight: 700,
+    display: "flex", alignItems: "center", justifyContent: "center" }).textContent = "翰林版 三年級自然｜第三單元 風與空氣";
+  div(70, 255, 640, 130, "abs", { color: "#fff", fontSize: 83, fontWeight: 700, display: "flex", alignItems: "center" }).textContent = "風力與風向";
+  div(70, 390, 640, 65, "abs", { color: "#fff", fontSize: 36, display: "flex", alignItems: "center" }).textContent = "學習心智圖・拖拉詞卡挑戰";
+  div(70, 470, 640, 80, "abs", { fontSize: 47, display: "flex", alignItems: "center", letterSpacing: "10px" }).textContent = "🚩🧭🎏✈️🤧";
+  const start = mk("button", "startBtn", "開始挑戰 ▶");
+  css(start, {});
+  start.onclick = () => { unlockAudio(); go(1); };
+  ctx.layer.append(start);
+  const got = Object.values(saved.stars).reduce((a, b) => a + b, 0);
+  if (got) div(420, 600, 280, 54, "abs", { color: "#fff", fontSize: 26, fontWeight: 700, display: "flex", alignItems: "center" })
+    .textContent = `目前有 ⭐ × ${got}`;
+
+  const card = div(725, 85, 558, 580, "howto");
+  card.append(css(mk("div", "", "👋 怎麼玩？"), { position: "absolute", left: 40, top: 26, fontSize: 33, fontWeight: 700, color: "#1B4F72" }));
+  const steps = [
+    "用手指按住黃色詞卡，拖到虛線框裡",
+    "也可以先點一下詞卡，再點虛線框",
+    "放對會變綠色 ✓，放錯會彈回去，小心陷阱卡！",
+    "每頁完成就能拿星星 ⭐，最後一頁是總整理",
+  ];
+  steps.forEach((t, i) => {
+    const s = css(mk("div", "step"), { top: 105 + i * 92 });
+    s.append(css(mk("b", "", String(i + 1)), { background: COL[i + 1] }), mk("span", "", t));
+    card.append(s);
+  });
+  const demo = mk("div", "card demo", "風力");
+  css(demo, { left: 80, top: 480, width: 115, pointerEvents: "none" });
+  const arrow = css(mk("div", "", "➜"), { position: "absolute", left: 215, top: 478, fontSize: 48, color: COL[4] });
+  const box = css(mk("div", "slot abs"), { left: 317, top: 480, width: 115, borderColor: COL[5], pointerEvents: "none" });
+  const lab = css(mk("div", "", "拖進來！"), { position: "absolute", left: 445, top: 495, fontSize: 21, fontWeight: 700, color: "#1B4F72" });
+  card.append(box, arrow, demo, lab);
+}
+
+function pSkeleton() {
+  header("★", 0, "心智圖骨架：看線索，放分支標題");
+  const CX = 666.7, CY = 330, R = 115, cw = 186;
+  const B = [
+    { n: 1, side: "R", yc: 180, title: "判斷風的強弱", clues: ["🚩 旗子飄多高？", "💨 風大還是風小？"] },
+    { n: 2, side: "R", yc: 330, title: "風從哪裡來？", clues: ["🧭 東、西、南、北", "📍 指北針怎麼用？"] },
+    { n: 3, side: "R", yc: 480, title: "判斷風向", clues: ["🎏 鯉魚旗飄向哪？", "🌬️ 這是什麼風？"] },
+    { n: 4, side: "L", yc: 480, title: "自製風力風向計", clues: ["🥢 吸管、竹筷、紙條", "📝 到戶外觀測紀錄"] },
+    { n: 5, side: "L", yc: 330, title: "風的遊戲", clues: ["✈️ 摺一架紙飛機", "🎯 丟出去比比看"] },
+    { n: 6, side: "L", yc: 180, title: "上風處與下風處", clues: ["🤧 打噴嚏站哪裡？", "👃 聞到臭味快移動"] },
+  ];
+  for (const b of B) {
+    b.bx = b.side === "R" ? 834 : 500 - cw;
+    const inner = b.side === "R" ? b.bx : b.bx + cw, outer = b.side === "R" ? b.bx + cw : b.bx;
+    b.clueX = b.side === "R" ? 1045 : 50;
+    const dx = inner - CX, dy = b.yc - CY, d = Math.hypot(dx, dy);
+    L(CX + (R * dx) / d, CY + (R * dy) / d, inner, b.yc, COL[b.n], 4);
+    L(outer, b.yc, b.side === "R" ? b.clueX : b.clueX + 238, b.yc, COL[b.n], 4);
+  }
+  const c = div(CX - R, CY - R, 2 * R, 2 * R, "center");
+  c.append(css(mk("div", "", "3-1"), { fontSize: 28 }), css(mk("div", "", "風力與風向"), { fontSize: 30 }));
+  for (const b of B) {
+    note(b.clueX, b.yc - 60, 238, 120, b.n, [{ h: 1, t: `${CIRC(b.n)} 線索`, size: 19 }, { t: b.clues[0] }, { t: b.clues[1] }])
+      .style.padding = "8px 10px";
+  }
+  for (const b of B) slotAt(b.bx, b.yc - 30, cw, b.n, [b.title]);
+  tray(B.map((b) => b.title), cw, { fs: 22, trap: false });
+}
+
+function pStrength() {
+  const br = 1;
+  header("1", br, "判斷風的強弱");
+  const cw = 115, rh = 74, ys = [0, 1, 2, 3, 4].map((i) => 122 + i * 85), x0 = 355;
+  const any = ["飄動", "轉動"];
+  spokes(br, x0, ys, rh);
+  branchNode(br, "🚩", "判斷風的強弱");
+  const rows = [
+    ["看到物體", { b: "飄動", any }, "或", { b: "轉動", any }, "，就知道有風"],
+    ["風的強弱，就稱為", { b: "風力" }],
+    ["旗子飄得愈高，表示風力愈", { b: "強" }],
+    ["風弱時，風車轉得比較", { b: "慢" }],
+    ["風強時，風車轉得比較", { b: "快" }],
+  ];
+  rows.forEach((p, i) => row(x0, ys[i], p, br, { cw, rh }));
+  note(1030, 122, 253, 235, br, [
+    { h: 1, t: "看到這些，就知道有風：", size: 19 },
+    { t: "🍃 落葉飄起來" }, { t: "👧 頭髮飛起來" }, { t: "🎐 風鈴叮噹響" }, { t: "🚩 旗子飄起來" },
+  ]);
+  tray(["飄動", "轉動", "風力", "強", "慢", "快", "風向", "弱"], cw);
+}
+
+function pCompass() {
+  const br = 2;
+  header("2", br, "風從哪裡來？認識方位與指北針");
+  const cw = 128, cx = 360, cy = 340;
+  S("circle", { cx, cy, r: 150, fill: COL[5] });
+  S("circle", { cx, cy, r: 125, fill: "#fff" });
+  for (const [t, dx, dy, f, tc] of [["北", 0, -1, "#E53935", "#fff"], ["東", 1, 0, "#FBC02D", "#263238"],
+    ["南", 0, 1, "#43A047", "#fff"], ["西", -1, 0, "#1E88E5", "#fff"]]) {
+    S("circle", { cx: cx + dx * 95, cy: cy + dy * 95, r: 23, fill: f });
+    T(cx + dx * 95, cy + dy * 95 + 1, t, 22, tc);
+  }
+  for (const [t, dx, dy] of [["東北", 1, -1], ["東南", 1, 1], ["西南", -1, 1], ["西北", -1, -1]])
+    T(cx + dx * 68, cy + dy * 68, t, 15, "#78909C", { "font-weight": 400 });
+  S("polygon", { points: `${cx - 15},${cy} ${cx + 15},${cy} ${cx},${cy - 68}`, fill: "#E53935" });
+  S("polygon", { points: `${cx - 15},${cy} ${cx + 15},${cy} ${cx},${cy + 68}`, fill: "#90A4AE" });
+  S("circle", { cx, cy, r: 10, fill: "#37474F" });
+  const leaders = [
+    { a: "指北端", bx: 555, by: 175, f: [555, 205], t: [cx, cy - 66] },
+    { a: "指南端", bx: 555, by: 445, f: [555, 475], t: [cx, cy + 66] },
+    { a: "指針", bx: 50, by: 255, f: [178, 285], t: [cx - 6, cy - 22] },
+    { a: "方位盤", bx: 50, by: 430, f: [178, 460], t: [cx - 138 * 0.707, cy + 138 * 0.707] },
+  ];
+  for (const l of leaders) {
+    L(l.f[0], l.f[1], l.t[0], l.t[1], "#455A64", 2);
+    S("circle", { cx: l.t[0], cy: l.t[1], r: 6, fill: "#455A64" });
+  }
+  T(cx, 515, "指北針構造圖", 19, "#546E7A", { "font-weight": 400 });
+  for (const l of leaders) slotAt(l.bx, l.by, cw, br, [l.a]);
+  row(730, 145, ["用東、西、南、北來表示", { b: "方位" }], br, { cw });
+  row(730, 245, ["方位", { b: "不會" }, "因觀測者的位置而改變"], br, { cw });
+  note(730, 355, 553, 175, br, [
+    { h: 1, t: "💡 想一想", size: 22 },
+    { t: "站的位置不一樣，看到的前、後、左、右就不一樣。", size: 22 },
+    { t: "先用指北針找出方位，就能正確說出風的方向！", size: 22 },
+  ]).style.padding = "10px 16px";
+  tray(["指北端", "指南端", "指針", "方位盤", "方位", "不會", "會", "風向"], cw);
+}
+
+function pCompassUse() {
+  const br = 2;
+  header("2", br, "指北針的使用方法");
+  const cw = 128, rh = 80, ys = [0, 1, 2, 3].map((i) => 130 + i * 104), x0 = 355;
+  const keep = ["電器", "鐵製品", "磁鐵"];
+  spokes(br, x0, ys, rh);
+  branchNode(br, "🧭", "指北針怎麼用");
+  const rows = [
+    ["① 將指北針", { b: "平放" }, "，等指針停止轉動"],
+    ["② 輕轉盤面，讓", { b: "指北端" }, "對準「北」字"],
+    ["③ 這時盤面上的東、西、南、北就是正確的", { b: "方位" }],
+    ["⚠️ 不可靠近", { b: "電器", any: keep }, "、", { b: "鐵製品", any: keep }, "和", { b: "磁鐵", any: keep }],
+  ];
+  rows.forEach((p, i) => row(x0, ys[i], p, br, { cw, rh, fill: i === 3 ? "#FDE7E7" : undefined }));
+  tray(["平放", "指北端", "方位", "電器", "鐵製品", "磁鐵", "指南端", "木頭"], cw);
+}
+
+function pEight() {
+  const br = 3;
+  header("3", br, "判斷風向：先認識八個方位");
+  const cw = 115, cx = 395, cy = 335;
+  const P = [["東北", 585, 210], ["東", 655, 335], ["東南", 585, 460], ["南", 395, 505],
+    ["西南", 205, 460], ["西", 135, 335], ["西北", 205, 210]];
+  const dots = { "stroke-dasharray": "2 7" };
+  L(cx, cy, cx, 162, "#90A4AE", 2.5, null, dots);
+  for (const [, x, y] of P) L(cx, cy, x, y, "#90A4AE", 2.5, null, dots);
+  S("circle", { cx, cy: 162, r: 36, fill: COL[br] });
+  T(cx, 163, "北", 33, "#fff");
+  S("circle", { cx, cy, r: 33, fill: "#fff", stroke: COL[br], "stroke-width": 2 });
+  T(cx, cy + 1, "🧭", 30, "#000", { "font-weight": 400 });
+  for (const [a, x, y] of P) slotAt(x - cw / 2, y - 30, cw, br, [a]);
+  note(800, 130, 483, 405, br, [
+    { h: 1, t: "💡 小提示", size: 25 },
+    { t: "地圖上的口訣：", size: 22, b: 1 },
+    { t: "上北、下南、左西、右東", size: 22 },
+    { t: "斜斜的方位：", size: 22, b: 1 },
+    { t: "把旁邊兩個方位合起來，而且「東」、「西」要說在前面喔！", size: 22 },
+    { t: "⚠️ 有一張陷阱卡，小心！", size: 22, c: "#C62828" },
+  ]).style.padding = "12px 22px";
+  tray(["東", "南", "西", "東北", "東南", "西南", "西北", "北東"], cw);
+}
+
+function pDirection() {
+  const br = 3;
+  header("3", br, "判斷風向");
+  const cw = 128;
+  const rows = [
+    ["風", { b: "吹過來" }, "的方向，就是「風向」"],
+    ["鯉魚旗飄向東方，表示風從", { b: "西" }, "方吹來"],
+    ["所以，這時候的風向叫做", { b: "西風" }],
+    ["用", { b: "箭頭" }, "表示風向，箭頭要指向", { b: "中心點" }],
+  ];
+  const dx = 1015, dy = 335, dots = { "stroke-dasharray": "2 7" };
+  L(820, dy, 1210, dy, "#90A4AE", 2.5, null, dots);
+  L(dx, 185, dx, 480, "#90A4AE", 2.5, null, dots);
+  for (const [t, x, y] of [["北", dx, 155], ["南", dx, 510], ["西", 790, dy], ["東", 1242, dy]]) {
+    S("circle", { cx: x, cy: y, r: 31, fill: COL[br] });
+    T(x, y + 1, t, 28, "#fff");
+  }
+  S("rect", { x: dx - 3.5, y: 200, width: 7, height: 255, fill: "#78909C" });
+  S("circle", { cx: dx, cy: 198, r: 8, fill: "#FBC02D" });
+  for (const [fy, len, col] of [[208, 165, "#E8604C"], [268, 135, "#2E86DE"]]) {
+    S("polygon", { points: `${dx + len - 6},${fy + 23} ${dx + len + 36},${fy + 2} ${dx + len + 36},${fy + 44}`, fill: col });
+    S("ellipse", { cx: dx + 4 + len / 2, cy: fy + 23, rx: len / 2, ry: 23, fill: col });
+    S("circle", { cx: dx + 29, cy: fy + 19, r: 9, fill: "#fff" });
+    S("circle", { cx: dx + 29, cy: fy + 19, r: 4, fill: "#263238" });
+  }
+  S("ellipse", { cx: dx, cy: 456, rx: 32, ry: 8, fill: "#78909C" });
+  const cap = div(740, 128, 240, 40, "abs", { fontSize: 21, fontWeight: 700, color: COL[br], whiteSpace: "nowrap" });
+  cap.textContent = "🎏 鯉魚旗飄向哪邊？";
+  rows.forEach((p, i) => row(50, 135 + i * 103, p, br, { cw }));
+  tray(["吹過來", "吹過去", "西", "東", "西風", "東風", "箭頭", "中心點"], cw);
+}
+
+function pGauge() {
+  const br = 4;
+  header("4", br, "自製風力風向計");
+  const cw = 115, rh = 74, ys = [0, 1, 2, 3, 4].map((i) => 122 + i * 85), x0 = 355;
+  spokes(br, x0, ys, rh);
+  branchNode(br, "🥢", "自製風力風向計");
+  const rows = [
+    ["材料：吸管、竹筷、紙條、指北針"],
+    ["能隨風", { b: "飄動" }, "的裝置，可以判斷", { b: "風力" }, "強弱"],
+    ["能隨風", { b: "轉動" }, "的裝置，可以判斷", { b: "風向" }],
+    ["選擇", { b: "空曠" }, "的地點進行觀測"],
+    ["紙條太硬飄不動？改用比較", { b: "軟" }, "的衛生紙"],
+  ];
+  rows.forEach((p, i) => row(x0, ys[i], p, br, { cw, rh, fill: i === 0 ? "#fff" : undefined }));
+  tray(["飄動", "風力", "轉動", "風向", "空曠", "軟", "硬", "熱鬧"], cw);
+}
+
+function pObserve() {
+  const br = 4;
+  header("4", br, "用風力風向計觀測風力");
+  const cw = 115;
+  const panels = [
+    { a: "無風", cap: "紙條下垂，沒有飄動", th: 0 },
+    { a: "弱風", cap: "紙條飄起，低於記號", th: 38 },
+    { a: "強風", cap: "紙條飄起，高於記號", th: 80 },
+  ];
+  panels.forEach((p, i) => {
+    const X = 50 + i * 421.65, px = X + 115, top = 150, Lh = 125;
+    S("rect", { x: X, y: 120, width: 390, height: 335, rx: 18, fill: "#fff", stroke: COL[br], "stroke-width": 2 });
+    L(px - 20, 225, px + 195, 225, COL[5], 2.5, "9 7", { "stroke-linecap": "butt" });
+    T(px + 222, 225, "記號", 15, COL[5], { "font-weight": 400 });
+    S("rect", { x: px - 3.5, y: top, width: 7, height: 160, fill: "#D84315" });
+    S("rect", { x: px - 5, y: top - 2, width: 80, height: 7, fill: "#CE93D8" });
+    S("ellipse", { cx: px, cy: top + 162, rx: 35, ry: 10, fill: "#3949AB" });
+    const tx = px + 72, ty = top + 4;
+    S("rect", { x: tx - 8, y: ty, width: 16, height: Lh, fill: "#AB47BC", transform: `rotate(${-p.th} ${tx} ${ty})` });
+    div(X, 330, 390, 42, "cap").textContent = p.cap;
+    slotAt(X + (390 - cw) / 2, 382, cw, br, [p.a]);
+  });
+  row(0, 472, ["紙條飄得愈", { b: "高" }, "，表示風力愈強"], br, { cw, rh: 76, center: true });
+  tray(["無風", "弱風", "強風", "高", "低"], cw);
+}
+
+function pPlane() {
+  const br = 5;
+  header("5", br, "風的遊戲：紙飛機大挑戰");
+  const cw = 115;
+  arrowDefs();
+  L(775, 136, 712, 136, "#607D8B", 2.5, null, { "marker-end": "url(#ah)" });
+  div(785, 118, 230, 36, "abs", { fontSize: 19, color: "#546E7A", whiteSpace: "nowrap" }).textContent = "紙飛機丟出去的方向";
+  blockArrow(1057, 136, 60, 32, 180, COL[4]);
+  div(1097, 118, 160, 36, "abs", { fontSize: 19, color: "#546E7A", whiteSpace: "nowrap" }).textContent = "風吹的方向";
+  const kinds = [{ a: "逆風", k: "head" }, { a: "順風", k: "tail" }, { a: "側風", k: "side" }];
+  kinds.forEach((p, i) => {
+    const X = 50 + i * 421.65, pcx = X + 195, py = 245;
+    S("rect", { x: X, y: 165, width: 390, height: 245, rx: 18, fill: "#fff", stroke: COL[br], "stroke-width": 2 });
+    L(pcx + 60, 190, pcx - 52, 190, "#607D8B", 2.5, null, { "marker-end": "url(#ah)" });
+    S("polygon", { points: `${pcx - 95},${py} ${pcx + 95},${py - 38} ${pcx + 95},${py + 38}`, fill: "#CE93D8", stroke: "#8E44AD", "stroke-width": 1.5 });
+    L(pcx - 90, py, pcx + 93, py, "#8E44AD", 1.5);
+    if (p.k === "tail") blockArrow(pcx + 142, py, 75, 40, 180, COL[4]);
+    if (p.k === "head") blockArrow(pcx - 142, py, 75, 40, 0, COL[4]);
+    if (p.k === "side") blockArrow(pcx + 48, py + 64, 46, 36, -120, COL[4]);
+    slotAt(X + (390 - cw) / 2, 342, cw, br, [p.a]);
+  });
+  row(50, 432, ["順風時，紙飛機飛得比較", { b: "遠" }], br, { cw });
+  row(560, 432, ["風力和風向", { b: "會" }, "影響紙飛機的飛行"], br, { cw });
+  tray(["順風", "逆風", "側風", "遠", "近", "會", "不會"], cw);
+}
+
+function pUpwind() {
+  const br = 6;
+  header("6", br, "充電站：上風處與下風處");
+  const cw = 128, cy = 207;
+  S("polygon", { points: `235,${cy - 30} 1200,${cy - 30} 1200,${cy - 62} 1278,${cy} 1200,${cy + 62} 1200,${cy + 30} 235,${cy + 30}`, fill: "#F9D3B5" });
+  const puffs = [[-58, 12, 44], [-10, -22, 56], [50, 0, 50], [12, 42, 40], [-38, 40, 36], [72, 36, 32]];
+  for (const [dx, dy, r] of puffs) S("circle", { cx: 160 + dx, cy: cy + dy, r: r + 2, fill: "#90A4AE" });
+  for (const [dx, dy, r] of puffs) S("circle", { cx: 160 + dx, cy: cy + dy, r, fill: "#fff" });
+  T(160, cy + 8, "呼～", 30, COL[0]);
+  for (const [x, col] of [[540, COL[5]], [920, COL[1]]]) S("circle", { cx: x, cy, r: 78, fill: "#fff", stroke: col, "stroke-width": 4 });
+  slotAt(540 - cw / 2, cy - 30, cw, br, ["上風處"]);
+  slotAt(920 - cw / 2, cy - 30, cw, br, ["下風處"]);
+  row(50, 330, ["上風處：比較靠近風的", { b: "來處" }], br, { cw });
+  row(600, 330, ["下風處：比較靠近風的", { b: "去向" }], br, { cw });
+  row(50, 440, ["打噴嚏時，病菌會隨著", { b: "口沫" }, "飛散"], br, { cw });
+  row(600, 440, ["占盡上風是", { b: "優勢" }, "，屈居下風是", { b: "劣勢" }], br, { cw });
+  tray(["上風處", "下風處", "來處", "去向", "口沫", "優勢", "劣勢"], cw, { trap: false });
+}
+
+function pSummary() {
+  header("✓", 0, "總整理心智圖", false);
+  const actIdx = PAGES.map((p, i) => (p.kind === "act" ? i : -1)).filter((i) => i >= 0);
+  const doneN = actIdx.filter((i) => saved.stars[i]).length;
+  const starN = actIdx.reduce((a, i) => a + (saved.stars[i] || 0), 0);
+  const chip = div(null, 34, null, null, "chip");
+  chip.style.left = "auto";
+  chip.style.right = "50px";
+  chip.append(mk("span", "", `⭐ ${starN} 顆・完成 ${doneN}/${actIdx.length} 關`));
+  const clr = mk("button", "", "清除紀錄");
+  clr.onclick = () => { if (confirm("要清除所有星星，重新挑戰嗎？")) { saved.stars = {}; persist(); render(); } };
+  chip.append(clr);
+
+  const CX = 666.7, CY = 415, R = 115, CW = 400, CH = 190;
+  const cards = [
+    { n: 1, side: "R", y: 115, title: "判斷風的強弱", items: ["物體飄動或轉動，就知道有風", "風的強弱＝風力", "旗子飄得愈高，風力愈強", "風弱風車轉得慢，風強轉得快"] },
+    { n: 2, side: "R", y: 320, title: "風從哪裡來？", items: ["用東西南北表示方位，不會改變", "指北端、指南端、指針、方位盤", "平放，轉盤面讓指北端對準「北」", "不可靠近電器、鐵製品、磁鐵"] },
+    { n: 3, side: "R", y: 525, title: "判斷風向", items: ["風吹過來的方向＝風向", "斜方位：東北、東南、西南、西北", "鯉魚旗飄向東→風從西來＝西風", "用箭頭表示風向，指向中心點"] },
+    { n: 4, side: "L", y: 525, title: "自製風力風向計", items: ["隨風飄動的裝置→判斷風力", "隨風轉動的裝置→判斷風向", "紙條下垂無風、飄低弱風、飄高強風", "選空曠地點；紙條太硬改用軟紙"] },
+    { n: 5, side: "L", y: 320, title: "風的遊戲", items: ["紙飛機：順風、逆風、側風", "順風時，紙飛機飛得比較遠", "風力和風向會影響飛行"] },
+    { n: 6, side: "L", y: 115, title: "上風處與下風處", items: ["上風處：靠近風的來處", "下風處：靠近風的去向", "打噴嚏時，病菌隨口沫飛散", "占盡上風＝優勢；屈居下風＝劣勢"] },
+  ];
+  for (const c of cards) {
+    c.x = c.side === "R" ? 1333 - 45 - CW : 45;
+    const ix = c.side === "R" ? c.x : c.x + CW, iy = c.y + CH / 2;
+    const dx = ix - CX, dy = iy - CY, d = Math.hypot(dx, dy);
+    L(CX + (R * dx) / d, CY + (R * dy) / d, ix, iy, COL[c.n], 4);
+  }
+  const ctr = div(CX - R, CY - R, 2 * R, 2 * R, "center");
+  ctr.append(css(mk("div", "", "🌬️"), { fontSize: 38 }), css(mk("div", "", "3-1"), { fontSize: 25 }), css(mk("div", "", "風力與風向"), { fontSize: 30 }));
+  for (const c of cards) {
+    const k = div(c.x, c.y, CW, CH, "sumCard", { borderColor: COL[c.n] });
+    k.append(css(mk("div", "hd", `${CIRC(c.n)} ${c.title}`), { background: COL[c.n] }));
+    const ul = mk("ul");
+    for (const t of c.items) ul.append(mk("li", "", t));
+    k.append(ul);
+  }
+}
+
+const PAGES = [
+  { name: "封面", kind: "cover", build: pCover },
+  { name: "心智圖骨架", kind: "act", build: pSkeleton },
+  { name: "① 判斷風的強弱", kind: "act", build: pStrength },
+  { name: "② 方位與指北針", kind: "act", build: pCompass },
+  { name: "② 指北針的使用方法", kind: "act", build: pCompassUse },
+  { name: "③ 八個方位", kind: "act", build: pEight },
+  { name: "③ 判斷風向", kind: "act", build: pDirection },
+  { name: "④ 自製風力風向計", kind: "act", build: pGauge },
+  { name: "④ 觀測風力", kind: "act", build: pObserve },
+  { name: "⑤ 風的遊戲", kind: "act", build: pPlane },
+  { name: "⑥ 上風處與下風處", kind: "act", build: pUpwind },
+  { name: "總整理", kind: "summary", build: pSummary },
+];
+
+/* ================== navigation & layout ================== */
+let cur = Math.min(Math.max(+saved.page || 0, 0), PAGES.length - 1);
+function render() {
+  drag = null; selected = null; overSlot = null;
+  ctx = newCtx();
+  ctx.stage.classList.remove("cover");
+  PAGES[cur].build();
+  renderNav();
+  fit();
+}
+function go(i) {
+  if (i < 0 || i >= PAGES.length) return;
+  cur = i; saved.page = i; persist();
+  render();
+}
+function renderNav() {
+  const dots = $("#dots");
+  dots.innerHTML = "";
+  PAGES.forEach((p, i) => {
+    const b = mk("button", "dot" + (i === cur ? " cur" : "") + (saved.stars[i] ? " done" : ""), String(i + 1));
+    b.title = p.name; b.setAttribute("aria-label", `第 ${i + 1} 頁 ${p.name}`);
+    b.onclick = () => go(i);
+    dots.append(b);
+  });
+  $("#prev").disabled = cur === 0;
+  $("#next").disabled = cur === PAGES.length - 1;
+  const act = PAGES[cur].kind === "act";
+  $("#hint").disabled = !act;
+  $("#reset").disabled = !act;
+  $("#mute").textContent = saved.muted ? "🔇" : "🔊";
+}
+function fit() {
+  const vp = $("#viewport"), vw = vp.clientWidth, vh = vp.clientHeight;
+  scale = Math.max(0.1, Math.min((vw - 16) / 1333, (vh - 12) / 750));
+  const ox = (vw - 1333 * scale) / 2, oy = (vh - 750 * scale) / 2;
+  $("#stage").style.transform = `translate(${ox}px, ${oy}px) scale(${scale})`;
+}
+$("#prev").onclick = () => go(cur - 1);
+$("#next").onclick = () => go(cur + 1);
+$("#hint").onclick = () => { unlockAudio(); giveHint(); };
+$("#reset").onclick = () => render();
+$("#mute").onclick = () => { saved.muted = !saved.muted; persist(); unlockAudio(); renderNav(); };
+window.addEventListener("resize", fit);
+window.addEventListener("orientationchange", () => setTimeout(fit, 200));
+document.addEventListener("keydown", (e) => {
+  if (e.target && e.target.classList && (e.target.classList.contains("card") || e.target.classList.contains("slot"))) return;
+  if (e.key === "ArrowRight") go(cur + 1);
+  if (e.key === "ArrowLeft") go(cur - 1);
+  if (e.key === "Escape") clearSelect();
+});
+document.addEventListener("gesturestart", (e) => e.preventDefault());
+render();
 </script>
 </body>
 </html>
