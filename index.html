@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="風力與風向">
+<meta name="apple-mobile-web-app-title" content="科學小勇士">
 <meta name="theme-color" content="#4FA3D9">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8E%8F%3C/text%3E%3C/svg%3E">
-<title>3-1 風力與風向｜學習心智圖拖拉挑戰</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%E2%9A%94%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<title>科學小勇士｜三年級自然闖關</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -16,13 +16,16 @@
     -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
     touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   }
+  input { -webkit-user-select: text; user-select: text; font: inherit; }
+  button { font: inherit; }
   #app { position: fixed; inset: 0; display: flex; flex-direction: column; }
   #viewport { flex: 1; position: relative; overflow: hidden; }
   #stage {
     position: absolute; left: 0; top: 0; width: 1333px; height: 750px; transform-origin: 0 0;
     background: #EEF7FD; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(11, 59, 92, .25);
   }
-  #stage.cover { background: #4FA3D9; }
+  #stage.sky { background: linear-gradient(#4FA3D9, #8CCBEF); }
+  #stage.white { background: #F7FAFC; }
   .layer { position: absolute; inset: 0; }
   .cards { pointer-events: none; }
   svg.draw { position: absolute; left: 0; top: 0; width: 1333px; height: 750px; pointer-events: none; }
@@ -49,6 +52,11 @@
     display: flex; flex-direction: column; justify-content: center; font-size: 21px; line-height: 1.45; }
   .note .nh { font-weight: 700; }
   .cap { position: absolute; text-align: center; font-size: 21px; }
+  .stepbox { position: absolute; background: #fff; border: 2.5px solid; border-radius: 18px; }
+  .stepbox .num { position: absolute; left: 14px; top: 14px; width: 44px; height: 44px; border-radius: 50%; color: #fff;
+    font-size: 24px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .stepbox .lab { position: absolute; left: 70px; top: 12px; height: 60px; display: flex; align-items: center; font-size: 28px; font-weight: 700; }
+  .stepbox .txt { position: absolute; left: 16px; right: 16px; top: 84px; font-size: 19px; line-height: 1.45; color: #37474F; }
 
   /* slots & cards */
   .slot { display: inline-block; flex: none; height: 60px; border: 3px dashed; border-radius: 12px; background: #fff;
@@ -78,6 +86,7 @@
     justify-content: center; }
   .card.shake { animation: shake .38s; }
   .card.demo { cursor: default; pointer-events: none; animation: demoMove 3.2s ease-in-out infinite; }
+  .spin { animation: spin 1.1s linear infinite; }
 
   @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-12px); }
     40% { transform: translateX(12px); } 60% { transform: translateX(-8px); } 80% { transform: translateX(8px); } }
@@ -86,69 +95,169 @@
   @keyframes hintGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); } 50% { box-shadow: 0 0 0 9px rgba(255, 179, 0, .85); } }
   @keyframes demoMove { 0%,15% { transform: translate(0,0); } 45%,75% { transform: translate(237px,0); background: #C8E6C9; border-color: #43A047; }
     90%,100% { transform: translate(0,0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* cover */
+  /* home & lesson map */
   .cloud { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, .35); }
-  .startBtn { position: absolute; left: 70px; top: 585px; width: 330px; height: 84px; border: none; border-radius: 22px;
-    background: #FFD54F; color: #4E342E; font: inherit; font-size: 36px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 6px 0 #D9A400; }
-  .startBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #D9A400; }
-  .howto { position: absolute; left: 725px; top: 85px; width: 558px; height: 580px; background: #fff; border-radius: 30px;
-    box-shadow: 0 6px 16px rgba(11, 59, 92, .25); }
-  .step { position: absolute; left: 40px; display: flex; align-items: center; gap: 18px; width: 490px; font-size: 24px; line-height: 1.35; }
-  .step b { flex: none; width: 50px; height: 50px; border-radius: 50%; color: #fff; font-size: 25px; display: flex;
-    align-items: center; justify-content: center; }
+  .bigBtn { position: absolute; border: none; border-radius: 22px; background: #FFD54F; color: #4E342E; font-size: 30px;
+    font-weight: 700; cursor: pointer; box-shadow: 0 6px 0 #D9A400; }
+  .bigBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #D9A400; }
+  .bigBtn.ghost { background: #fff; color: #1B4F72; box-shadow: 0 6px 0 #9CC3DD; }
+  .bigBtn:disabled { background: #ECEFF1; color: #90A4AE; box-shadow: 0 6px 0 #CFD8DC; cursor: default; }
+  .lessonCard { position: absolute; background: #fff; border-radius: 28px; box-shadow: 0 6px 16px rgba(11, 59, 92, .22); padding: 22px 28px; }
+  .lessonCard.off { background: rgba(255, 255, 255, .7); }
+  .lessonCard h3 { margin: 0 0 12px; font-size: 36px; color: #1B4F72; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chipU { border-radius: 16px; padding: 6px 14px; font-size: 21px; font-weight: 700; background: #E3EEF6; color: #1B4F72; white-space: nowrap; }
+  .chipU.off { background: #ECEFF1; color: #90A4AE; }
+  .unitNode { position: absolute; width: 210px; text-align: center; cursor: pointer; }
+  .unitNode .disc { width: 170px; height: 170px; margin: 0 auto; border-radius: 50%; background: #fff; border: 8px solid;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 0 rgba(0, 0, 0, .12); }
+  .unitNode .disc .ic { font-size: 58px; line-height: 1; }
+  .unitNode .disc .no { font-size: 26px; font-weight: 700; color: #1B4F72; margin-top: 4px; }
+  .unitNode .nm { margin-top: 12px; font-size: 27px; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0, 0, 0, .25); }
+  .unitNode .pg { margin-top: 4px; font-size: 21px; color: #fff; font-weight: 700; text-shadow: 0 1px 3px rgba(0, 0, 0, .25); }
+  .unitNode.off { cursor: default; opacity: .75; }
+  .bossCard { position: absolute; left: 905px; top: 120px; width: 380px; height: 540px; background: rgba(20, 40, 70, .82);
+    border-radius: 30px; color: #fff; padding: 22px; text-align: center; }
+  .bossCard h3 { margin: 0 0 6px; font-size: 32px; }
+  .bossCard .sub { font-size: 19px; opacity: .85; margin-bottom: 10px; }
+  .mon { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, .1); border-radius: 20px; padding: 10px;
+    margin-top: 12px; text-align: left; }
+  .mon .av { width: 96px; height: 96px; flex: none; }
+  .mon .av svg { width: 100%; height: 100%; }
+  .mon .info { flex: 1; }
+  .mon .info b { font-size: 26px; display: block; }
+  .mon .info span { font-size: 17px; opacity: .85; }
+  .mon button { border: none; border-radius: 14px; background: #FFD54F; color: #4E342E; font-size: 21px; font-weight: 700;
+    padding: 10px 14px; cursor: pointer; white-space: nowrap; }
+  .mon button:disabled { background: #607D8B; color: #CFD8DC; cursor: default; }
 
-  /* summary */
+  /* summary cards */
   .sumCard { position: absolute; width: 400px; height: 190px; background: #fff; border: 2.5px solid; border-radius: 18px; }
   .sumCard .hd { margin: 12px 12px 8px; height: 46px; border-radius: 12px; color: #fff; font-size: 24px; font-weight: 700;
     display: flex; align-items: center; padding: 0 12px; }
   .sumCard ul { margin: 0; padding: 0 14px 0 34px; font-size: 19px; line-height: 1.45; }
-  .chip { position: absolute; left: 820px; top: 34px; height: 54px; padding: 0 10px 0 20px; border-radius: 27px; background: #fff;
-    border: 1.5px solid #B9D7EA; color: #1B4F72; font-weight: 700; font-size: 21px; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
-  .chip button { font: inherit; font-size: 17px; border: none; border-radius: 18px; background: #E3EEF6; color: #1B4F72;
-    padding: 6px 14px; cursor: pointer; }
 
-  /* finish overlay */
+  /* battle */
+  .arena { position: absolute; left: 0; top: 0; width: 1333px; height: 470px; }
+  .fighter { position: absolute; }
+  .fighter svg { width: 100%; height: 100%; overflow: visible; }
+  .bob { animation: bob 2.4s ease-in-out infinite; }
+  .sway { animation: sway 2.2s ease-in-out infinite; transform-origin: 50% 90%; }
+  .wobble { animation: wob 2.2s ease-in-out infinite; transform-origin: 50% 60%; }
+  @keyframes bob { 50% { transform: translateY(-10px); } }
+  @keyframes sway { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+  @keyframes wob { 50% { transform: scale(1.05, .95); } }
+  .lungeR { animation: lungeR .45s ease-out; }
+  .lungeL { animation: lungeL .45s ease-out; }
+  .hit { animation: hit .55s; }
+  @keyframes lungeR { 40% { transform: translateX(70px); } }
+  @keyframes lungeL { 40% { transform: translateX(-70px); } }
+  @keyframes hit { 0%,100% { transform: translateX(0); filter: none; } 20% { transform: translateX(16px); filter: brightness(1.7) saturate(.2); }
+    45% { transform: translateX(-12px); } 70% { transform: translateX(8px); } }
+  .proj { position: absolute; font-size: 64px; z-index: 40; transition: left .45s ease-in, top .45s ease-in, transform .45s; pointer-events: none; }
+  .dmg { position: absolute; font-size: 44px; font-weight: 800; color: #FFEB3B; text-shadow: 0 3px 0 #BF360C, 0 0 8px rgba(0,0,0,.4);
+    z-index: 41; animation: dmg 1s ease-out forwards; pointer-events: none; }
+  @keyframes dmg { to { transform: translateY(-70px); opacity: 0; } }
+  .hearts { position: absolute; font-size: 34px; letter-spacing: 2px; }
+  .hearts span { display: inline-block; }
+  .hearts span.lost { animation: heartPop .5s; }
+  @keyframes heartPop { 40% { transform: scale(1.6); } }
+  .hpbox { position: absolute; color: #fff; font-weight: 700; font-size: 22px; text-shadow: 0 2px 3px rgba(0, 0, 0, .4); }
+  .hpbar { margin-top: 6px; height: 26px; border-radius: 13px; background: rgba(0, 0, 0, .35); border: 3px solid #fff; overflow: hidden; }
+  .hpfill { height: 100%; background: linear-gradient(90deg, #FF7043, #FFCA28); transition: width .5s; }
+  .qpanel { position: absolute; left: 50px; top: 482px; width: 1233px; height: 252px; background: #fff; border-radius: 26px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .2); }
+  .qno { position: absolute; left: 30px; top: 16px; font-size: 20px; color: #78909C; font-weight: 700; }
+  .qtext { position: absolute; left: 30px; right: 30px; top: 44px; height: 76px; display: flex; align-items: center;
+    font-size: 30px; font-weight: 700; color: #1B4F72; line-height: 1.3; }
+  .opts { position: absolute; left: 30px; right: 30px; top: 132px; display: flex; gap: 22px; }
+  .opt { flex: 1; height: 92px; border-radius: 20px; border: 3px solid #F9A825; background: #FFF8DC; color: #4E342E;
+    font-size: 29px; font-weight: 700; cursor: pointer; box-shadow: 0 5px 0 #E0B000; line-height: 1.2; padding: 0 10px; }
+  .opt:active { transform: translateY(3px); box-shadow: 0 2px 0 #E0B000; }
+  .opt.right { background: #C8E6C9; border-color: #43A047; box-shadow: 0 5px 0 #2E7D32; color: #1B5E20; }
+  .opt.wrong { background: #FFCDD2; border-color: #E53935; box-shadow: 0 5px 0 #C62828; color: #B71C1C; }
+  .opt.dim { opacity: .45; }
+  .fb { position: absolute; left: 30px; right: 30px; top: 132px; height: 100px; border-radius: 18px; display: none;
+    align-items: center; gap: 16px; padding: 0 18px; font-size: 23px; line-height: 1.35; }
+  .fb.show { display: flex; }
+  .fb.ok { background: #E8F5E9; color: #1B5E20; }
+  .fb.no { background: #FFEBEE; color: #B71C1C; }
+  .fb .msg { flex: 1; }
+  .fb button { flex: none; border: none; border-radius: 16px; background: #1B4F72; color: #fff; font-size: 24px; font-weight: 700;
+    padding: 14px 22px; cursor: pointer; }
+  .flee { position: absolute; right: 30px; top: 24px; border: none; border-radius: 16px; background: rgba(255, 255, 255, .85);
+    color: #1B4F72; font-size: 20px; font-weight: 700; padding: 10px 16px; cursor: pointer; }
+  .btitle { position: absolute; left: 34px; top: 24px; color: #fff; font-size: 30px; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, .35); }
+
+  /* admin */
+  .panelBox { position: absolute; background: #fff; border-radius: 20px; border: 2px solid #D6E4EE; }
+  .panelBox h4 { margin: 0; font-size: 24px; color: #1B4F72; }
+  .scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+  .prow { padding: 12px 0; border-bottom: 1px dashed #D6E4EE; font-size: 19px; line-height: 1.5; }
+  .prow b { color: #1B4F72; }
+  .abtn { border: none; border-radius: 14px; background: #E3EEF6; color: #1B4F72; font-size: 18px; font-weight: 700;
+    padding: 10px 14px; cursor: pointer; }
+  .abtn.warn { background: #FFEBEE; color: #C62828; }
+  .abtn.on { background: #1B4F72; color: #fff; }
+  .mrow { display: grid; grid-template-columns: 84px 1fr 130px 150px 48px; gap: 12px; padding: 12px 6px; border-bottom: 1px solid #ECEFF1;
+    font-size: 18px; line-height: 1.45; align-items: start; }
+  .mrow.head { font-weight: 700; color: #546E7A; background: #F5F8FA; position: sticky; top: 0; }
+  .mrow .tag { display: inline-block; border-radius: 8px; padding: 1px 8px; font-size: 15px; font-weight: 700; color: #fff; margin-top: 3px; }
+  .mrow .ans { color: #2E7D32; font-weight: 700; }
+  .mrow .bad { color: #C62828; }
+  .mrow .cnt { font-weight: 800; font-size: 22px; color: #C62828; text-align: center; }
+  .empty { padding: 60px 20px; text-align: center; color: #90A4AE; font-size: 22px; }
+
+  /* overlays */
   .overlay { position: absolute; inset: 0; background: rgba(14, 52, 80, .45); display: flex; align-items: center;
     justify-content: center; z-index: 60; animation: fade .25s; }
-  .panel { width: 560px; background: #fff; border-radius: 30px; padding: 34px 36px 38px; text-align: center;
+  .panel { width: 600px; background: #fff; border-radius: 30px; padding: 34px 36px 38px; text-align: center;
     box-shadow: 0 20px 40px rgba(0, 0, 0, .3); animation: pop .35s; }
-  .panel h2 { margin: 0 0 4px; font-size: 46px; color: #1B4F72; }
+  .panel.wide { width: 860px; text-align: left; }
+  .panel h2 { margin: 0 0 4px; font-size: 44px; color: #1B4F72; }
   .panel .stars { font-size: 64px; letter-spacing: 8px; margin: 4px 0; }
   .panel .stars .off { filter: grayscale(1); opacity: .3; }
-  .panel p { font-size: 22px; color: #546E7A; margin: 6px 0 24px; }
-  .btn { font: inherit; font-size: 24px; font-weight: 700; border: none; border-radius: 18px; padding: 14px 28px; margin: 0 6px; cursor: pointer; }
+  .panel p { font-size: 22px; color: #546E7A; margin: 6px 0 24px; line-height: 1.5; white-space: pre-line; }
+  .panel .acts { text-align: center; }
+  .panel input { width: 220px; height: 64px; font-size: 32px; text-align: center; border: 3px solid #B9D7EA; border-radius: 14px; margin: 4px 0 22px; }
+  .btn { font-size: 24px; font-weight: 700; border: none; border-radius: 18px; padding: 14px 28px; margin: 6px; cursor: pointer; }
   .btn.primary { background: #FFD54F; color: #4E342E; box-shadow: 0 5px 0 #D9A400; }
   .btn.ghost { background: #E3EEF6; color: #1B4F72; }
+  .btn.red { background: #E8604C; color: #fff; box-shadow: 0 5px 0 #B23E2D; }
+  .howlist { margin: 10px 0 20px; padding: 0; list-style: none; }
+  .howlist li { display: flex; gap: 14px; align-items: center; font-size: 23px; margin: 12px 0; line-height: 1.4; }
+  .howlist li b { flex: none; width: 44px; height: 44px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; }
   .confetti { position: absolute; top: -30px; width: 14px; height: 20px; border-radius: 3px; z-index: 70; pointer-events: none;
     animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(820px) rotate(720deg); } }
   @keyframes fade { from { opacity: 0; } }
   @keyframes pop { from { transform: scale(.7); opacity: 0; } }
+  .shakeX { animation: shake .4s; }
 
   /* nav */
   #nav { flex: none; height: 64px; display: flex; align-items: center; justify-content: flex-start; gap: 8px;
     padding: 0 10px calc(env(safe-area-inset-bottom) * .5); overflow-x: auto; }
-  #nav button { font: inherit; border: none; border-radius: 14px; background: #fff; color: #1B4F72; font-weight: 700;
+  #nav > .sp:first-child { margin-left: auto; }
+  #nav > .sp:last-child { margin-right: auto; }
+  #nav button { border: none; border-radius: 14px; background: #fff; color: #1B4F72; font-weight: 700;
     height: 44px; min-width: 44px; padding: 0 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, .12); cursor: pointer; font-size: 16px;
     flex: none; white-space: nowrap; }
-  #nav > :first-child { margin-left: auto; }
-  #nav > :last-child { margin-right: auto; }
-  @media (max-width: 900px) {
-    #nav { gap: 5px; }
-    #nav .t { display: none; }
-    #dots { gap: 3px; }
-    #nav .dot { width: 32px; min-width: 32px; font-size: 13px; }
-  }
   #nav button:disabled { opacity: .35; cursor: default; }
-  #dots { display: flex; gap: 5px; }
+  #nav .dots { display: flex; gap: 5px; flex: none; }
   #nav .dot { width: 38px; min-width: 38px; padding: 0; font-size: 15px; position: relative; }
   #nav .dot.cur { background: #1B4F72; color: #fff; }
   #nav .dot.done::after { content: "★"; position: absolute; right: -4px; top: -7px; color: #F9A825; font-size: 16px;
     text-shadow: 0 0 3px #fff, 0 0 3px #fff; }
+  @media (max-width: 900px) {
+    #nav { gap: 5px; }
+    #nav .t { display: none; }
+    #nav .dots { gap: 3px; }
+    #nav .dot { width: 30px; min-width: 30px; font-size: 13px; }
+  }
   #rotate { display: none; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: #fff; color: #1B4F72;
-    border-radius: 20px; padding: 6px 16px; font-size: 15px; box-shadow: 0 2px 6px rgba(0, 0, 0, .15); pointer-events: none; z-index: 5; }
+    border-radius: 20px; padding: 6px 16px; font-size: 15px; box-shadow: 0 2px 6px rgba(0, 0, 0, .15); pointer-events: none; z-index: 5; white-space: nowrap; }
   @media (orientation: portrait) { #rotate { display: block; } }
 </style>
 </head>
@@ -158,24 +267,19 @@
     <div id="rotate">📱 把 iPad 橫過來，畫面會更大喔！</div>
     <div id="stage"></div>
   </div>
-  <nav id="nav">
-    <button id="prev" aria-label="上一頁">◀</button>
-    <div id="dots"></div>
-    <button id="next" aria-label="下一頁">▶</button>
-    <button id="hint" aria-label="提示">💡<span class="t"> 提示</span></button>
-    <button id="reset" aria-label="重來">🔄<span class="t"> 重來</span></button>
-    <button id="mute" aria-label="聲音開關">🔊</button>
-  </nav>
+  <nav id="nav"></nav>
 </div>
 
 <script>
 "use strict";
-/* ================== constants & tiny helpers ================== */
+/* =====================================================================
+   1. constants & tiny helpers
+   ===================================================================== */
 const NS = "http://www.w3.org/2000/svg";
 const COL = { 0: "#1B4F72", 1: "#E8604C", 2: "#7B61C9", 3: "#159A8C", 4: "#EF8A17", 5: "#2E86DE", 6: "#3FA34D" };
 const TINT = { 0: "#E3EEF6", 1: "#FDECE9", 2: "#EFEBFA", 3: "#E2F4F1", 4: "#FEF1E0", 5: "#E5F0FC", 6: "#E8F5E9" };
 const CIRC = (n) => String.fromCodePoint(0x2460 + n - 1);
-const STORE = "wind31-v1";
+const STORE = "sciquest-v2", OLD_STORE = "wind31-v1";
 const $ = (s) => document.querySelector(s);
 
 function mk(tag, cls, text) {
@@ -194,13 +298,44 @@ function shuffle(a) {
   for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
   return r;
 }
+function fmtTime(t) {
+  if (!t) return "";
+  const d = new Date(t);
+  return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
 
-/* ================== storage (best effort) ================== */
-let saved = { stars: {}, page: 0, muted: false };
-try { const s = JSON.parse(localStorage.getItem(STORE)); if (s && typeof s === "object") saved = Object.assign(saved, s); } catch (e) {}
+/* =====================================================================
+   2. storage (best effort, per device)
+   ===================================================================== */
+let saved = { v: 2, stars: {}, boss: {}, mistakes: {}, loc: { screen: "home" }, muted: false, unlockBoss: false };
+try {
+  const s = JSON.parse(localStorage.getItem(STORE));
+  if (s && typeof s === "object") saved = Object.assign(saved, s);
+  else {
+    // migrate stars from the first 3-1 version
+    const old = JSON.parse(localStorage.getItem(OLD_STORE));
+    if (old && old.stars) {
+      const ids = ["skel", "strength", "compass", "compassUse", "eight", "direction", "gauge", "observe", "plane", "upwind"];
+      saved.stars["3-1"] = {};
+      for (const k in old.stars) { const id = ids[+k - 1]; if (id) saved.stars["3-1"][id] = old.stars[k]; }
+      saved.muted = !!old.muted;
+    }
+  }
+} catch (e) {}
 function persist() { try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch (e) {} }
+function logMistake(m) {
+  const key = `${m.unit}|${m.src}|${m.prompt}`;
+  const r = saved.mistakes[key] || (saved.mistakes[key] = { unit: m.unit, src: m.src, page: m.page, prompt: m.prompt,
+    answer: m.answer, chosen: {}, count: 0, first: Date.now() });
+  r.count++;
+  r.chosen[m.chosen] = (r.chosen[m.chosen] || 0) + 1;
+  r.last = Date.now();
+  persist();
+}
 
-/* ================== sound ================== */
+/* =====================================================================
+   3. sound
+   ===================================================================== */
 let actx = null;
 function unlockAudio() {
   try {
@@ -221,46 +356,57 @@ function sound(kind) {
     if (kind === "ok") { tone(784, t, 0.12); tone(1047, t + 0.1, 0.2); }
     else if (kind === "bad") tone(196, t, 0.25, "square", 0.07);
     else if (kind === "win") [523, 659, 784, 1047].forEach((f, i) => tone(f, t + i * 0.13, 0.3));
+    else if (kind === "zap") { tone(660, t, 0.08, "sawtooth", 0.08); tone(990, t + 0.07, 0.18, "sawtooth", 0.07); }
+    else if (kind === "hurt") { tone(330, t, 0.12, "square", 0.07); tone(220, t + 0.1, 0.25, "square", 0.07); }
+    else if (kind === "lose") [392, 330, 262].forEach((f, i) => tone(f, t + i * 0.18, 0.3, "triangle", 0.12));
   } catch (e) {}
 }
 
-/* ================== page context & drawing helpers ================== */
-let ctx = null;       // current page context
-let scale = 1;
-function newCtx() {
+/* =====================================================================
+   4. stage context & drawing helpers
+   ===================================================================== */
+let ctx = null, scale = 1;
+let curUnit = null, curPage = 0;
+function newCtx(bg) {
   const stage = $("#stage");
   stage.innerHTML = "";
+  stage.className = bg || "";
+  stage.style.background = "";
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("viewBox", "0 0 1333 750"); svg.setAttribute("class", "draw");
   const layer = mk("div", "layer"), cards = mk("div", "layer cards");
   stage.append(svg, layer, cards);
   return { stage, svg, layer, cardsLayer: cards, slots: [], cards: [], placed: 0, mistakes: 0, hints: 0, done: false };
 }
-function S(name, attrs, text) {
+function S(name, attrs, text, parent) {
   const e = document.createElementNS(NS, name);
   for (const k in attrs) e.setAttribute(k, attrs[k]);
   if (text != null) e.textContent = text;
-  ctx.svg.append(e);
+  (parent || ctx.svg).append(e);
   return e;
 }
-function L(x1, y1, x2, y2, color, w, dash, extra) {
+function L(x1, y1, x2, y2, color, w, dash, extra, parent) {
   const a = { x1, y1, x2, y2, stroke: color, "stroke-width": w || 3, "stroke-linecap": "round" };
   if (dash) a["stroke-dasharray"] = dash;
-  return S("line", Object.assign(a, extra || {}));
+  return S("line", Object.assign(a, extra || {}), null, parent);
 }
 function T(x, y, text, size, fill, extra) {
   return S("text", Object.assign({ x, y, "font-size": size, fill, "text-anchor": "middle", "dominant-baseline": "central",
     "font-weight": 700 }, extra || {}), text);
 }
-function arrowDefs() {
+function P(d, attrs) { return S("path", Object.assign({ d }, attrs || {})); }
+function arrowDefs(color) {
   const d = S("defs", {});
-  d.innerHTML = '<marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">' +
-    '<path d="M0,0 L10,5 L0,10 z" fill="#607D8B"/></marker>';
+  d.innerHTML = `<marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">` +
+    `<path d="M0,0 L10,5 L0,10 z" fill="${color || "#607D8B"}"/></marker>`;
 }
 function blockArrow(cx, cy, len, thick, angle, color) {
   const shaft = thick * 0.5, headLen = thick * 0.6, x0 = -len / 2, x1 = len / 2 - headLen, x2 = len / 2;
   const pts = [[x0, -shaft / 2], [x1, -shaft / 2], [x1, -thick / 2], [x2, 0], [x1, thick / 2], [x1, shaft / 2], [x0, shaft / 2]];
   S("polygon", { points: pts.map((p) => p.join(",")).join(" "), fill: color, transform: `translate(${cx},${cy}) rotate(${angle})` });
+}
+function panelRect(x, y, w, h, br) {
+  S("rect", { x, y, width: w, height: h, rx: 18, fill: "#fff", stroke: COL[br], "stroke-width": 2 });
 }
 function div(x, y, w, h, cls, style) {
   const e = mk("div", cls);
@@ -271,7 +417,7 @@ function div(x, y, w, h, cls, style) {
 function header(badge, br, title, crumb = true) {
   div(50, 30, null, null, "badge", { background: COL[br] }).textContent = badge;
   div(130, 30, null, null, "title").textContent = title;
-  if (crumb) div(1055, 36, null, null, "crumb").textContent = "3-1 風力與風向";
+  if (crumb && curUnit) div(1055, 36, null, null, "crumb").textContent = curUnit.crumb;
 }
 function note(x, y, w, h, br, lines) {
   const n = div(x, y, w, h, "note", { borderColor: COL[br] });
@@ -285,18 +431,19 @@ function note(x, y, w, h, br, lines) {
   }
   return n;
 }
-function makeSlot(br, accept, cw) {
+function makeSlot(br, accept, cw, prompt) {
   const s = mk("div", "slot");
   css(s, { width: cw, borderColor: COL[br] });
   s.dataset.accept = accept.join("|");
+  s.dataset.prompt = prompt || "";
   s.tabIndex = 0; s.setAttribute("role", "button"); s.setAttribute("aria-label", "空格");
   s.addEventListener("click", () => onSlotTap(s));
   s.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSlotTap(s); } });
   ctx.slots.push(s);
   return s;
 }
-function slotAt(x, y, cw, br, accept) {
-  const s = makeSlot(br, accept, cw);
+function slotAt(x, y, cw, br, accept, prompt) {
+  const s = makeSlot(br, accept, cw, prompt);
   s.classList.add("abs");
   css(s, { left: x, top: y });
   ctx.layer.append(s);
@@ -307,10 +454,11 @@ function row(x, y, parts, br, o = {}) {
   const rh = o.rh || 80;
   const p = mk("div", "pill");
   css(p, { left: x, top: y, height: rh, background: o.fill || TINT[br], borderColor: COL[br] });
-  for (const part of parts) {
-    if (typeof part === "string") p.append(mk("span", "seg", part));
-    else p.append(makeSlot(br, part.any || [part.b], o.cw));
-  }
+  parts.forEach((part, i) => {
+    if (typeof part === "string") { p.append(mk("span", "seg", part)); return; }
+    const prompt = parts.map((q, j) => (typeof q === "string" ? q : j === i ? "（　）" : "＿＿")).join("");
+    p.append(makeSlot(br, part.any || [part.b], o.cw, prompt));
+  });
   if (o.center) {
     const wrap = div(0, y, 1333, rh, "abs", { display: "flex", justifyContent: "center", pointerEvents: "none" });
     css(p, { position: "relative", left: 0, top: 0, pointerEvents: "auto" });
@@ -321,7 +469,6 @@ function row(x, y, parts, br, o = {}) {
 function branchNode(br, emoji, title) {
   const n = div(50, 255, 255, 160, "node", { background: COL[br] });
   n.append(css(mk("div", "", emoji), { fontSize: 42 }), css(mk("div", "", title), { fontSize: 29 }));
-  return { rx: 305, cy: 335 };
 }
 function spokes(br, x0, ys, rh) {
   for (const y of ys) L(305, 335, x0, y + rh / 2, COL[br], 3.5);
@@ -344,8 +491,10 @@ function tray(words, cw, o = {}) {
   }
 }
 
-/* ================== drag & tap logic ================== */
-let drag = null, selected = null;
+/* =====================================================================
+   5. drag & tap logic (mind-map pages)
+   ===================================================================== */
+let drag = null, selected = null, overSlot = null;
 function bindCard(c) {
   c.addEventListener("pointerdown", (e) => {
     if (c.classList.contains("placed") || ctx.done) return;
@@ -391,7 +540,6 @@ function findSlot(c) {
   }
   return bestArea > 0.3 * r.width * r.height ? best : null;
 }
-let overSlot = null;
 function markOver(s) {
   if (overSlot === s) return;
   if (overSlot) overSlot.classList.remove("over");
@@ -409,7 +557,7 @@ function toggleSelect(c) {
 function clearSelect() {
   if (selected) selected.classList.remove("selected");
   selected = null;
-  ctx.slots.forEach((s) => s.classList.remove("targetable"));
+  if (ctx) ctx.slots.forEach((s) => s.classList.remove("targetable"));
 }
 function onSlotTap(s) {
   if (!selected || s.dataset.filled || ctx.done) return;
@@ -418,18 +566,21 @@ function onSlotTap(s) {
   tryPlace(c, s);
 }
 function tryPlace(c, s) {
-  const ok = s.dataset.accept.split("|").includes(c.dataset.word);
-  if (ok) {
+  const acc = s.dataset.accept.split("|");
+  if (acc.includes(c.dataset.word)) {
     const sr = ctx.stage.getBoundingClientRect(), q = s.getBoundingClientRect();
     css(c, { left: (q.left - sr.left) / scale, top: (q.top - sr.top) / scale });
     c.classList.add("placed"); c.tabIndex = -1;
     s.dataset.filled = "1"; s.tabIndex = -1;
     ctx.placed++;
     sound("ok");
-    if (ctx.placed === ctx.slots.length) { ctx.done = true; setTimeout(finish, 650); }
+    if (ctx.placed === ctx.slots.length) { ctx.done = true; setTimeout(finishPage, 650); }
   } else {
     ctx.mistakes++;
     sound("bad");
+    const page = curUnit.pages[curPage];
+    logMistake({ unit: curUnit.id, src: "心智圖", page: page.name, prompt: s.dataset.prompt || page.name,
+      answer: acc.join("／"), chosen: c.dataset.word });
     s.classList.remove("bad"); void s.offsetWidth; s.classList.add("bad");
     c.classList.add("shake");
     setTimeout(() => { c.classList.remove("shake"); sendHome(c); }, 380);
@@ -446,29 +597,45 @@ function giveHint() {
   for (const e of [s, c]) { e.classList.remove("hint"); void e.offsetWidth; e.classList.add("hint"); }
   setTimeout(() => { s.classList.remove("hint"); c.classList.remove("hint"); }, 1900);
 }
-function starsFor(mistakes, hints) {
-  const p = mistakes + hints;
-  return p <= 1 ? 3 : p <= 3 ? 2 : 1;
-}
-function finish() {
+function starsFor(mistakes, hints) { const p = mistakes + hints; return p <= 1 ? 3 : p <= 3 ? 2 : 1; }
+function finishPage() {
+  const lesson = lessonOf(curUnit);
+  const wasOpen = bossOpen(lesson);
   const n = starsFor(ctx.mistakes, ctx.hints);
-  saved.stars[cur] = Math.max(saved.stars[cur] || 0, n);
+  const st = saved.stars[curUnit.id] || (saved.stars[curUnit.id] = {});
+  const pid = curUnit.pages[curPage].id;
+  st[pid] = Math.max(st[pid] || 0, n);
   persist(); renderNav();
   sound("win"); confetti();
-  const ov = mk("div", "overlay"), p = mk("div", "panel");
+  const justOpened = !wasOpen && bossOpen(lesson);
+  const p = overlayPanel();
   p.append(mk("h2", "", n === 3 ? "🎉 太厲害了！" : n === 2 ? "🎉 完成了！" : "👍 完成了！"));
-  const st = mk("div", "stars");
-  for (let i = 0; i < 3; i++) { const s = mk("span", i < n ? "" : "off", "⭐"); st.append(s); }
-  p.append(st);
-  p.append(mk("p", "", `放錯 ${ctx.mistakes} 次・用了 ${ctx.hints} 次提示`));
+  const stx = mk("div", "stars");
+  for (let i = 0; i < 3; i++) stx.append(mk("span", i < n ? "" : "off", "⭐"));
+  p.append(stx);
+  p.append(mk("p", "", `放錯 ${ctx.mistakes} 次・用了 ${ctx.hints} 次提示` +
+    (justOpened ? `\n🔓 ${lesson.no}全部完成！大魔王出現了！` : "")));
+  if (justOpened) {
+    const b = mk("button", "btn red", "⚔️ 去挑戰大魔王");
+    b.onclick = () => show({ screen: "lesson", lesson: lesson.id });
+    p.append(b);
+  }
   const again = mk("button", "btn ghost", "🔄 再玩一次");
-  again.onclick = () => render();
-  const nextLabel = PAGES[cur + 1] && PAGES[cur + 1].kind === "summary" ? "看總整理 ▶" : "下一頁 ▶";
-  const next = mk("button", "btn primary", nextLabel);
-  next.onclick = () => go(cur + 1);
-  p.append(again, next);
+  again.onclick = () => renderScreen();
+  p.append(again);
+  const nx = curUnit.pages[curPage + 1];
+  if (nx) {
+    const next = mk("button", "btn primary", nx.kind === "summary" ? "看總整理 ▶" : "下一頁 ▶");
+    next.onclick = () => goPage(curPage + 1);
+    p.append(next);
+  }
+}
+function overlayPanel(cls) {
+  const ov = mk("div", "overlay"), p = mk("div", "panel" + (cls ? " " + cls : ""));
   ov.append(p);
   ctx.stage.append(ov);
+  p.close = () => ov.remove();
+  return p;
 }
 function confetti() {
   const colors = ["#E8604C", "#7B61C9", "#159A8C", "#EF8A17", "#2E86DE", "#3FA34D", "#FFD54F"];
@@ -481,48 +648,51 @@ function confetti() {
   }
 }
 
-/* ================== pages ================== */
-function pCover() {
-  ctx.stage.classList.add("cover");
-  for (const [x, y, w, h] of [[430, 35, 220, 70], [-60, 635, 340, 110], [320, 670, 260, 80], [30, 25, 170, 55]]) div(x, y, w, h, "cloud");
-  div(70, 110, 125, 125, "center", { background: "#FFD54F", color: "#1B4F72", fontSize: 44 }).textContent = "3-1";
-  div(215, 145, 475, 55, "abs", { background: "#fff", borderRadius: 28, color: "#1B4F72", fontSize: 24, fontWeight: 700,
-    display: "flex", alignItems: "center", justifyContent: "center" }).textContent = "翰林版 三年級自然｜第三單元 風與空氣";
-  div(70, 255, 640, 130, "abs", { color: "#fff", fontSize: 83, fontWeight: 700, display: "flex", alignItems: "center" }).textContent = "風力與風向";
-  div(70, 390, 640, 65, "abs", { color: "#fff", fontSize: 36, display: "flex", alignItems: "center" }).textContent = "學習心智圖・拖拉詞卡挑戰";
-  div(70, 470, 640, 80, "abs", { fontSize: 47, display: "flex", alignItems: "center", letterSpacing: "10px" }).textContent = "🚩🧭🎏✈️🤧";
-  const start = mk("button", "startBtn", "開始挑戰 ▶");
-  css(start, {});
-  start.onclick = () => { unlockAudio(); go(1); };
-  ctx.layer.append(start);
-  const got = Object.values(saved.stars).reduce((a, b) => a + b, 0);
-  if (got) div(420, 600, 280, 54, "abs", { color: "#fff", fontSize: 26, fontWeight: 700, display: "flex", alignItems: "center" })
-    .textContent = `目前有 ⭐ × ${got}`;
-
-  const card = div(725, 85, 558, 580, "howto");
-  card.append(css(mk("div", "", "👋 怎麼玩？"), { position: "absolute", left: 40, top: 26, fontSize: 33, fontWeight: 700, color: "#1B4F72" }));
-  const steps = [
-    "用手指按住黃色詞卡，拖到虛線框裡",
-    "也可以先點一下詞卡，再點虛線框",
-    "放對會變綠色 ✓，放錯會彈回去，小心陷阱卡！",
-    "每頁完成就能拿星星 ⭐，最後一頁是總整理",
-  ];
-  steps.forEach((t, i) => {
-    const s = css(mk("div", "step"), { top: 105 + i * 92 });
-    s.append(css(mk("b", "", String(i + 1)), { background: COL[i + 1] }), mk("span", "", t));
-    card.append(s);
-  });
-  const demo = mk("div", "card demo", "風力");
-  css(demo, { left: 80, top: 480, width: 115, pointerEvents: "none" });
-  const arrow = css(mk("div", "", "➜"), { position: "absolute", left: 215, top: 478, fontSize: 48, color: COL[4] });
-  const box = css(mk("div", "slot abs"), { left: 317, top: 480, width: 115, borderColor: COL[5], pointerEvents: "none" });
-  const lab = css(mk("div", "", "拖進來！"), { position: "absolute", left: 445, top: 495, fontSize: 21, fontWeight: 700, color: "#1B4F72" });
-  card.append(box, arrow, demo, lab);
+/* generic skeleton & summary pages */
+function skeletonPage(centerLines, B, cw, fs) {
+  header("★", 0, "心智圖骨架：看線索，放分支標題");
+  const CX = 666.7, CY = 330, R = 115;
+  for (const b of B) {
+    const inner = b.side === "R" ? b.bx : b.bx + cw, outer = b.side === "R" ? b.bx + cw : b.bx;
+    const dx = inner - CX, dy = b.yc - CY, d = Math.hypot(dx, dy);
+    L(CX + (R * dx) / d, CY + (R * dy) / d, inner, b.yc, COL[b.n], 4);
+    L(outer, b.yc, b.side === "R" ? b.clueX : b.clueX + b.clueW, b.yc, COL[b.n], 4);
+  }
+  const c = div(CX - R, CY - R, 2 * R, 2 * R, "center");
+  c.append(css(mk("div", "", centerLines[0]), { fontSize: 28 }), css(mk("div", "", centerLines[1]), { fontSize: 30 }));
+  for (const b of B) {
+    note(b.clueX, b.yc - 60, b.clueW, 120, b.n, [{ h: 1, t: `${CIRC(b.n)} 線索`, size: 19 }, { t: b.clues[0] }, { t: b.clues[1] }])
+      .style.padding = "8px 10px";
+  }
+  for (const b of B) slotAt(b.bx, b.yc - 30, cw, b.n, [b.title], `心智圖骨架（線索：${b.clues.join("、")}）`);
+  tray(B.map((b) => b.title), cw, { fs, trap: false });
+}
+function summaryPage(centerLines, cards) {
+  header("✓", 0, "總整理心智圖");
+  const CX = 666.7, CY = 415, R = 115, CW = 400, CH = 190;
+  for (const c of cards) {
+    c.x = c.side === "R" ? 1333 - 45 - CW : 45;
+    const ix = c.side === "R" ? c.x : c.x + CW, iy = c.y + CH / 2;
+    const dx = ix - CX, dy = iy - CY, d = Math.hypot(dx, dy);
+    L(CX + (R * dx) / d, CY + (R * dy) / d, ix, iy, COL[c.n], 4);
+  }
+  const ctr = div(CX - R, CY - R, 2 * R, 2 * R, "center");
+  ctr.append(css(mk("div", "", centerLines[0]), { fontSize: 38 }), css(mk("div", "", centerLines[1]), { fontSize: 25 }),
+    css(mk("div", "", centerLines[2]), { fontSize: 30 }));
+  for (const c of cards) {
+    const k = div(c.x, c.y, CW, CH, "sumCard", { borderColor: COL[c.n] });
+    k.append(css(mk("div", "hd", `${CIRC(c.n)} ${c.title}`), { background: COL[c.n] }));
+    const ul = mk("ul");
+    for (const t of c.items) ul.append(mk("li", "", t));
+    k.append(ul);
+  }
 }
 
-function pSkeleton() {
-  header("★", 0, "心智圖骨架：看線索，放分支標題");
-  const CX = 666.7, CY = 330, R = 115, cw = 186;
+/* =====================================================================
+   6. 3-1 風力與風向 pages
+   ===================================================================== */
+function p31Skeleton() {
+  const cw = 186;
   const B = [
     { n: 1, side: "R", yc: 180, title: "判斷風的強弱", clues: ["🚩 旗子飄多高？", "💨 風大還是風小？"] },
     { n: 2, side: "R", yc: 330, title: "風從哪裡來？", clues: ["🧭 東、西、南、北", "📍 指北針怎麼用？"] },
@@ -531,47 +701,29 @@ function pSkeleton() {
     { n: 5, side: "L", yc: 330, title: "風的遊戲", clues: ["✈️ 摺一架紙飛機", "🎯 丟出去比比看"] },
     { n: 6, side: "L", yc: 180, title: "上風處與下風處", clues: ["🤧 打噴嚏站哪裡？", "👃 聞到臭味快移動"] },
   ];
-  for (const b of B) {
-    b.bx = b.side === "R" ? 834 : 500 - cw;
-    const inner = b.side === "R" ? b.bx : b.bx + cw, outer = b.side === "R" ? b.bx + cw : b.bx;
-    b.clueX = b.side === "R" ? 1045 : 50;
-    const dx = inner - CX, dy = b.yc - CY, d = Math.hypot(dx, dy);
-    L(CX + (R * dx) / d, CY + (R * dy) / d, inner, b.yc, COL[b.n], 4);
-    L(outer, b.yc, b.side === "R" ? b.clueX : b.clueX + 238, b.yc, COL[b.n], 4);
-  }
-  const c = div(CX - R, CY - R, 2 * R, 2 * R, "center");
-  c.append(css(mk("div", "", "3-1"), { fontSize: 28 }), css(mk("div", "", "風力與風向"), { fontSize: 30 }));
-  for (const b of B) {
-    note(b.clueX, b.yc - 60, 238, 120, b.n, [{ h: 1, t: `${CIRC(b.n)} 線索`, size: 19 }, { t: b.clues[0] }, { t: b.clues[1] }])
-      .style.padding = "8px 10px";
-  }
-  for (const b of B) slotAt(b.bx, b.yc - 30, cw, b.n, [b.title]);
-  tray(B.map((b) => b.title), cw, { fs: 22, trap: false });
+  for (const b of B) { b.bx = b.side === "R" ? 834 : 500 - cw; b.clueX = b.side === "R" ? 1045 : 50; b.clueW = 238; }
+  skeletonPage(["3-1", "風力與風向"], B, cw, 22);
 }
-
-function pStrength() {
+function p31Strength() {
   const br = 1;
   header("1", br, "判斷風的強弱");
-  const cw = 115, rh = 74, ys = [0, 1, 2, 3, 4].map((i) => 122 + i * 85), x0 = 355;
-  const any = ["飄動", "轉動"];
+  const cw = 115, rh = 74, ys = [0, 1, 2, 3, 4].map((i) => 122 + i * 85), x0 = 355, any = ["飄動", "轉動"];
   spokes(br, x0, ys, rh);
   branchNode(br, "🚩", "判斷風的強弱");
-  const rows = [
+  [
     ["看到物體", { b: "飄動", any }, "或", { b: "轉動", any }, "，就知道有風"],
     ["風的強弱，就稱為", { b: "風力" }],
     ["旗子飄得愈高，表示風力愈", { b: "強" }],
     ["風弱時，風車轉得比較", { b: "慢" }],
     ["風強時，風車轉得比較", { b: "快" }],
-  ];
-  rows.forEach((p, i) => row(x0, ys[i], p, br, { cw, rh }));
+  ].forEach((p, i) => row(x0, ys[i], p, br, { cw, rh }));
   note(1030, 122, 253, 235, br, [
     { h: 1, t: "看到這些，就知道有風：", size: 19 },
     { t: "🍃 落葉飄起來" }, { t: "👧 頭髮飛起來" }, { t: "🎐 風鈴叮噹響" }, { t: "🚩 旗子飄起來" },
   ]);
   tray(["飄動", "轉動", "風力", "強", "慢", "快", "風向", "弱"], cw);
 }
-
-function pCompass() {
+function p31Compass() {
   const br = 2;
   header("2", br, "風從哪裡來？認識方位與指北針");
   const cw = 128, cx = 360, cy = 340;
@@ -588,17 +740,17 @@ function pCompass() {
   S("polygon", { points: `${cx - 15},${cy} ${cx + 15},${cy} ${cx},${cy + 68}`, fill: "#90A4AE" });
   S("circle", { cx, cy, r: 10, fill: "#37474F" });
   const leaders = [
-    { a: "指北端", bx: 555, by: 175, f: [555, 205], t: [cx, cy - 66] },
-    { a: "指南端", bx: 555, by: 445, f: [555, 475], t: [cx, cy + 66] },
-    { a: "指針", bx: 50, by: 255, f: [178, 285], t: [cx - 6, cy - 22] },
-    { a: "方位盤", bx: 50, by: 430, f: [178, 460], t: [cx - 138 * 0.707, cy + 138 * 0.707] },
+    { a: "指北端", bx: 555, by: 175, f: [555, 205], t: [cx, cy - 66], p: "指北針構造：紅色、指向北方的尖端" },
+    { a: "指南端", bx: 555, by: 445, f: [555, 475], t: [cx, cy + 66], p: "指北針構造：灰色、指向南方的尖端" },
+    { a: "指針", bx: 50, by: 255, f: [178, 285], t: [cx - 6, cy - 22], p: "指北針構造：中間會轉動的長針" },
+    { a: "方位盤", bx: 50, by: 430, f: [178, 460], t: [cx - 138 * 0.707, cy + 138 * 0.707], p: "指北針構造：寫著東西南北的圓盤" },
   ];
   for (const l of leaders) {
     L(l.f[0], l.f[1], l.t[0], l.t[1], "#455A64", 2);
     S("circle", { cx: l.t[0], cy: l.t[1], r: 6, fill: "#455A64" });
   }
   T(cx, 515, "指北針構造圖", 19, "#546E7A", { "font-weight": 400 });
-  for (const l of leaders) slotAt(l.bx, l.by, cw, br, [l.a]);
+  for (const l of leaders) slotAt(l.bx, l.by, cw, br, [l.a], l.p);
   row(730, 145, ["用東、西、南、北來表示", { b: "方位" }], br, { cw });
   row(730, 245, ["方位", { b: "不會" }, "因觀測者的位置而改變"], br, { cw });
   note(730, 355, 553, 175, br, [
@@ -608,38 +760,34 @@ function pCompass() {
   ]).style.padding = "10px 16px";
   tray(["指北端", "指南端", "指針", "方位盤", "方位", "不會", "會", "風向"], cw);
 }
-
-function pCompassUse() {
+function p31CompassUse() {
   const br = 2;
   header("2", br, "指北針的使用方法");
-  const cw = 128, rh = 80, ys = [0, 1, 2, 3].map((i) => 130 + i * 104), x0 = 355;
-  const keep = ["電器", "鐵製品", "磁鐵"];
+  const cw = 128, rh = 80, ys = [0, 1, 2, 3].map((i) => 130 + i * 104), x0 = 355, keep = ["電器", "鐵製品", "磁鐵"];
   spokes(br, x0, ys, rh);
   branchNode(br, "🧭", "指北針怎麼用");
-  const rows = [
+  [
     ["① 將指北針", { b: "平放" }, "，等指針停止轉動"],
     ["② 輕轉盤面，讓", { b: "指北端" }, "對準「北」字"],
     ["③ 這時盤面上的東、西、南、北就是正確的", { b: "方位" }],
     ["⚠️ 不可靠近", { b: "電器", any: keep }, "、", { b: "鐵製品", any: keep }, "和", { b: "磁鐵", any: keep }],
-  ];
-  rows.forEach((p, i) => row(x0, ys[i], p, br, { cw, rh, fill: i === 3 ? "#FDE7E7" : undefined }));
+  ].forEach((p, i) => row(x0, ys[i], p, br, { cw, rh, fill: i === 3 ? "#FDE7E7" : undefined }));
   tray(["平放", "指北端", "方位", "電器", "鐵製品", "磁鐵", "指南端", "木頭"], cw);
 }
-
-function pEight() {
+function p31Eight() {
   const br = 3;
   header("3", br, "判斷風向：先認識八個方位");
   const cw = 115, cx = 395, cy = 335;
-  const P = [["東北", 585, 210], ["東", 655, 335], ["東南", 585, 460], ["南", 395, 505],
-    ["西南", 205, 460], ["西", 135, 335], ["西北", 205, 210]];
+  const P8 = [["東北", 585, 210, "右上"], ["東", 655, 335, "右邊"], ["東南", 585, 460, "右下"], ["南", 395, 505, "下面"],
+    ["西南", 205, 460, "左下"], ["西", 135, 335, "左邊"], ["西北", 205, 210, "左上"]];
   const dots = { "stroke-dasharray": "2 7" };
   L(cx, cy, cx, 162, "#90A4AE", 2.5, null, dots);
-  for (const [, x, y] of P) L(cx, cy, x, y, "#90A4AE", 2.5, null, dots);
+  for (const [, x, y] of P8) L(cx, cy, x, y, "#90A4AE", 2.5, null, dots);
   S("circle", { cx, cy: 162, r: 36, fill: COL[br] });
   T(cx, 163, "北", 33, "#fff");
   S("circle", { cx, cy, r: 33, fill: "#fff", stroke: COL[br], "stroke-width": 2 });
   T(cx, cy + 1, "🧭", 30, "#000", { "font-weight": 400 });
-  for (const [a, x, y] of P) slotAt(x - cw / 2, y - 30, cw, br, [a]);
+  for (const [a, x, y, pos] of P8) slotAt(x - cw / 2, y - 30, cw, br, [a], `八方位圖（北在上面）：${pos}的方位`);
   note(800, 130, 483, 405, br, [
     { h: 1, t: "💡 小提示", size: 25 },
     { t: "地圖上的口訣：", size: 22, b: 1 },
@@ -650,18 +798,10 @@ function pEight() {
   ]).style.padding = "12px 22px";
   tray(["東", "南", "西", "東北", "東南", "西南", "西北", "北東"], cw);
 }
-
-function pDirection() {
+function p31Direction() {
   const br = 3;
   header("3", br, "判斷風向");
-  const cw = 128;
-  const rows = [
-    ["風", { b: "吹過來" }, "的方向，就是「風向」"],
-    ["鯉魚旗飄向東方，表示風從", { b: "西" }, "方吹來"],
-    ["所以，這時候的風向叫做", { b: "西風" }],
-    ["用", { b: "箭頭" }, "表示風向，箭頭要指向", { b: "中心點" }],
-  ];
-  const dx = 1015, dy = 335, dots = { "stroke-dasharray": "2 7" };
+  const cw = 128, dx = 1015, dy = 335, dots = { "stroke-dasharray": "2 7" };
   L(820, dy, 1210, dy, "#90A4AE", 2.5, null, dots);
   L(dx, 185, dx, 480, "#90A4AE", 2.5, null, dots);
   for (const [t, x, y] of [["北", dx, 155], ["南", dx, 510], ["西", 790, dy], ["東", 1242, dy]]) {
@@ -677,56 +817,58 @@ function pDirection() {
     S("circle", { cx: dx + 29, cy: fy + 19, r: 4, fill: "#263238" });
   }
   S("ellipse", { cx: dx, cy: 456, rx: 32, ry: 8, fill: "#78909C" });
-  const cap = div(740, 128, 240, 40, "abs", { fontSize: 21, fontWeight: 700, color: COL[br], whiteSpace: "nowrap" });
-  cap.textContent = "🎏 鯉魚旗飄向哪邊？";
-  rows.forEach((p, i) => row(50, 135 + i * 103, p, br, { cw }));
+  div(740, 128, 240, 40, "abs", { fontSize: 21, fontWeight: 700, color: COL[br], whiteSpace: "nowrap" }).textContent = "🎏 鯉魚旗飄向哪邊？";
+  [
+    ["風", { b: "吹過來" }, "的方向，就是「風向」"],
+    ["鯉魚旗飄向東方，表示風從", { b: "西" }, "方吹來"],
+    ["所以，這時候的風向叫做", { b: "西風" }],
+    ["用", { b: "箭頭" }, "表示風向，箭頭要指向", { b: "中心點" }],
+  ].forEach((p, i) => row(50, 135 + i * 103, p, br, { cw }));
   tray(["吹過來", "吹過去", "西", "東", "西風", "東風", "箭頭", "中心點"], cw);
 }
-
-function pGauge() {
+function p31Gauge() {
   const br = 4;
   header("4", br, "自製風力風向計");
   const cw = 115, rh = 74, ys = [0, 1, 2, 3, 4].map((i) => 122 + i * 85), x0 = 355;
   spokes(br, x0, ys, rh);
   branchNode(br, "🥢", "自製風力風向計");
-  const rows = [
+  [
     ["材料：吸管、竹筷、紙條、指北針"],
     ["能隨風", { b: "飄動" }, "的裝置，可以判斷", { b: "風力" }, "強弱"],
     ["能隨風", { b: "轉動" }, "的裝置，可以判斷", { b: "風向" }],
     ["選擇", { b: "空曠" }, "的地點進行觀測"],
     ["紙條太硬飄不動？改用比較", { b: "軟" }, "的衛生紙"],
-  ];
-  rows.forEach((p, i) => row(x0, ys[i], p, br, { cw, rh, fill: i === 0 ? "#fff" : undefined }));
+  ].forEach((p, i) => row(x0, ys[i], p, br, { cw, rh, fill: i === 0 ? "#fff" : undefined }));
   tray(["飄動", "風力", "轉動", "風向", "空曠", "軟", "硬", "熱鬧"], cw);
 }
-
-function pObserve() {
+function windGauge(px, top, th, poleH, barW, L0, markY) {
+  L(px - 20, markY, px + 195, markY, COL[5], 2.5, "9 7", { "stroke-linecap": "butt" });
+  T(px + 222, markY, "記號", 15, COL[5], { "font-weight": 400 });
+  S("rect", { x: px - 3.5, y: top, width: 7, height: poleH, fill: "#D84315" });
+  S("rect", { x: px - 5, y: top - 2, width: barW, height: 7, fill: "#CE93D8" });
+  S("ellipse", { cx: px, cy: top + poleH + 2, rx: 35, ry: 10, fill: "#3949AB" });
+  const tx = px + barW - 8, ty = top + 4;
+  S("rect", { x: tx - 8, y: ty, width: 16, height: L0, fill: "#AB47BC", transform: `rotate(${-th} ${tx} ${ty})` });
+}
+function p31Observe() {
   const br = 4;
   header("4", br, "用風力風向計觀測風力");
   const cw = 115;
-  const panels = [
+  [
     { a: "無風", cap: "紙條下垂，沒有飄動", th: 0 },
     { a: "弱風", cap: "紙條飄起，低於記號", th: 38 },
     { a: "強風", cap: "紙條飄起，高於記號", th: 80 },
-  ];
-  panels.forEach((p, i) => {
-    const X = 50 + i * 421.65, px = X + 115, top = 150, Lh = 125;
-    S("rect", { x: X, y: 120, width: 390, height: 335, rx: 18, fill: "#fff", stroke: COL[br], "stroke-width": 2 });
-    L(px - 20, 225, px + 195, 225, COL[5], 2.5, "9 7", { "stroke-linecap": "butt" });
-    T(px + 222, 225, "記號", 15, COL[5], { "font-weight": 400 });
-    S("rect", { x: px - 3.5, y: top, width: 7, height: 160, fill: "#D84315" });
-    S("rect", { x: px - 5, y: top - 2, width: 80, height: 7, fill: "#CE93D8" });
-    S("ellipse", { cx: px, cy: top + 162, rx: 35, ry: 10, fill: "#3949AB" });
-    const tx = px + 72, ty = top + 4;
-    S("rect", { x: tx - 8, y: ty, width: 16, height: Lh, fill: "#AB47BC", transform: `rotate(${-p.th} ${tx} ${ty})` });
+  ].forEach((p, i) => {
+    const X = 50 + i * 421.65, px = X + 115;
+    panelRect(X, 120, 390, 335, br);
+    windGauge(px, 150, p.th, 160, 80, 125, 225);
     div(X, 330, 390, 42, "cap").textContent = p.cap;
-    slotAt(X + (390 - cw) / 2, 382, cw, br, [p.a]);
+    slotAt(X + (390 - cw) / 2, 382, cw, br, [p.a], `風力觀測：${p.cap}`);
   });
   row(0, 472, ["紙條飄得愈", { b: "高" }, "，表示風力愈強"], br, { cw, rh: 76, center: true });
   tray(["無風", "弱風", "強風", "高", "低"], cw);
 }
-
-function pPlane() {
+function p31Plane() {
   const br = 5;
   header("5", br, "風的遊戲：紙飛機大挑戰");
   const cw = 115;
@@ -735,24 +877,23 @@ function pPlane() {
   div(785, 118, 230, 36, "abs", { fontSize: 19, color: "#546E7A", whiteSpace: "nowrap" }).textContent = "紙飛機丟出去的方向";
   blockArrow(1057, 136, 60, 32, 180, COL[4]);
   div(1097, 118, 160, 36, "abs", { fontSize: 19, color: "#546E7A", whiteSpace: "nowrap" }).textContent = "風吹的方向";
-  const kinds = [{ a: "逆風", k: "head" }, { a: "順風", k: "tail" }, { a: "側風", k: "side" }];
-  kinds.forEach((p, i) => {
+  [{ a: "逆風", k: "head", d: "風從紙飛機前方吹來" }, { a: "順風", k: "tail", d: "風從紙飛機後方吹來" },
+    { a: "側風", k: "side", d: "風從紙飛機旁邊吹來" }].forEach((p, i) => {
     const X = 50 + i * 421.65, pcx = X + 195, py = 245;
-    S("rect", { x: X, y: 165, width: 390, height: 245, rx: 18, fill: "#fff", stroke: COL[br], "stroke-width": 2 });
+    panelRect(X, 165, 390, 245, br);
     L(pcx + 60, 190, pcx - 52, 190, "#607D8B", 2.5, null, { "marker-end": "url(#ah)" });
     S("polygon", { points: `${pcx - 95},${py} ${pcx + 95},${py - 38} ${pcx + 95},${py + 38}`, fill: "#CE93D8", stroke: "#8E44AD", "stroke-width": 1.5 });
     L(pcx - 90, py, pcx + 93, py, "#8E44AD", 1.5);
     if (p.k === "tail") blockArrow(pcx + 142, py, 75, 40, 180, COL[4]);
     if (p.k === "head") blockArrow(pcx - 142, py, 75, 40, 0, COL[4]);
     if (p.k === "side") blockArrow(pcx + 48, py + 64, 46, 36, -120, COL[4]);
-    slotAt(X + (390 - cw) / 2, 342, cw, br, [p.a]);
+    slotAt(X + (390 - cw) / 2, 342, cw, br, [p.a], `紙飛機：${p.d}`);
   });
   row(50, 432, ["順風時，紙飛機飛得比較", { b: "遠" }], br, { cw });
   row(560, 432, ["風力和風向", { b: "會" }, "影響紙飛機的飛行"], br, { cw });
   tray(["順風", "逆風", "側風", "遠", "近", "會", "不會"], cw);
 }
-
-function pUpwind() {
+function p31Upwind() {
   const br = 6;
   header("6", br, "充電站：上風處與下風處");
   const cw = 128, cy = 207;
@@ -762,99 +903,931 @@ function pUpwind() {
   for (const [dx, dy, r] of puffs) S("circle", { cx: 160 + dx, cy: cy + dy, r, fill: "#fff" });
   T(160, cy + 8, "呼～", 30, COL[0]);
   for (const [x, col] of [[540, COL[5]], [920, COL[1]]]) S("circle", { cx: x, cy, r: 78, fill: "#fff", stroke: col, "stroke-width": 4 });
-  slotAt(540 - cw / 2, cy - 30, cw, br, ["上風處"]);
-  slotAt(920 - cw / 2, cy - 30, cw, br, ["下風處"]);
+  slotAt(540 - cw / 2, cy - 30, cw, br, ["上風處"], "上風下風圖：比較靠近風吹來的地方");
+  slotAt(920 - cw / 2, cy - 30, cw, br, ["下風處"], "上風下風圖：比較靠近風去向的地方");
   row(50, 330, ["上風處：比較靠近風的", { b: "來處" }], br, { cw });
   row(600, 330, ["下風處：比較靠近風的", { b: "去向" }], br, { cw });
   row(50, 440, ["打噴嚏時，病菌會隨著", { b: "口沫" }, "飛散"], br, { cw });
   row(600, 440, ["占盡上風是", { b: "優勢" }, "，屈居下風是", { b: "劣勢" }], br, { cw });
   tray(["上風處", "下風處", "來處", "去向", "口沫", "優勢", "劣勢"], cw, { trap: false });
 }
-
-function pSummary() {
-  header("✓", 0, "總整理心智圖", false);
-  const actIdx = PAGES.map((p, i) => (p.kind === "act" ? i : -1)).filter((i) => i >= 0);
-  const doneN = actIdx.filter((i) => saved.stars[i]).length;
-  const starN = actIdx.reduce((a, i) => a + (saved.stars[i] || 0), 0);
-  const chip = div(null, 34, null, null, "chip");
-  chip.style.left = "auto";
-  chip.style.right = "50px";
-  chip.append(mk("span", "", `⭐ ${starN} 顆・完成 ${doneN}/${actIdx.length} 關`));
-  const clr = mk("button", "", "清除紀錄");
-  clr.onclick = () => { if (confirm("要清除所有星星，重新挑戰嗎？")) { saved.stars = {}; persist(); render(); } };
-  chip.append(clr);
-
-  const CX = 666.7, CY = 415, R = 115, CW = 400, CH = 190;
-  const cards = [
+function p31Summary() {
+  summaryPage(["🌬️", "3-1", "風力與風向"], [
     { n: 1, side: "R", y: 115, title: "判斷風的強弱", items: ["物體飄動或轉動，就知道有風", "風的強弱＝風力", "旗子飄得愈高，風力愈強", "風弱風車轉得慢，風強轉得快"] },
     { n: 2, side: "R", y: 320, title: "風從哪裡來？", items: ["用東西南北表示方位，不會改變", "指北端、指南端、指針、方位盤", "平放，轉盤面讓指北端對準「北」", "不可靠近電器、鐵製品、磁鐵"] },
     { n: 3, side: "R", y: 525, title: "判斷風向", items: ["風吹過來的方向＝風向", "斜方位：東北、東南、西南、西北", "鯉魚旗飄向東→風從西來＝西風", "用箭頭表示風向，指向中心點"] },
     { n: 4, side: "L", y: 525, title: "自製風力風向計", items: ["隨風飄動的裝置→判斷風力", "隨風轉動的裝置→判斷風向", "紙條下垂無風、飄低弱風、飄高強風", "選空曠地點；紙條太硬改用軟紙"] },
     { n: 5, side: "L", y: 320, title: "風的遊戲", items: ["紙飛機：順風、逆風、側風", "順風時，紙飛機飛得比較遠", "風力和風向會影響飛行"] },
     { n: 6, side: "L", y: 115, title: "上風處與下風處", items: ["上風處：靠近風的來處", "下風處：靠近風的去向", "打噴嚏時，病菌隨口沫飛散", "占盡上風＝優勢；屈居下風＝劣勢"] },
-  ];
-  for (const c of cards) {
-    c.x = c.side === "R" ? 1333 - 45 - CW : 45;
-    const ix = c.side === "R" ? c.x : c.x + CW, iy = c.y + CH / 2;
-    const dx = ix - CX, dy = iy - CY, d = Math.hypot(dx, dy);
-    L(CX + (R * dx) / d, CY + (R * dy) / d, ix, iy, COL[c.n], 4);
-  }
-  const ctr = div(CX - R, CY - R, 2 * R, 2 * R, "center");
-  ctr.append(css(mk("div", "", "🌬️"), { fontSize: 38 }), css(mk("div", "", "3-1"), { fontSize: 25 }), css(mk("div", "", "風力與風向"), { fontSize: 30 }));
-  for (const c of cards) {
-    const k = div(c.x, c.y, CW, CH, "sumCard", { borderColor: COL[c.n] });
-    k.append(css(mk("div", "hd", `${CIRC(c.n)} ${c.title}`), { background: COL[c.n] }));
-    const ul = mk("ul");
-    for (const t of c.items) ul.append(mk("li", "", t));
-    k.append(ul);
-  }
+  ]);
 }
 
-const PAGES = [
-  { name: "封面", kind: "cover", build: pCover },
-  { name: "心智圖骨架", kind: "act", build: pSkeleton },
-  { name: "① 判斷風的強弱", kind: "act", build: pStrength },
-  { name: "② 方位與指北針", kind: "act", build: pCompass },
-  { name: "② 指北針的使用方法", kind: "act", build: pCompassUse },
-  { name: "③ 八個方位", kind: "act", build: pEight },
-  { name: "③ 判斷風向", kind: "act", build: pDirection },
-  { name: "④ 自製風力風向計", kind: "act", build: pGauge },
-  { name: "④ 觀測風力", kind: "act", build: pObserve },
-  { name: "⑤ 風的遊戲", kind: "act", build: pPlane },
-  { name: "⑥ 上風處與下風處", kind: "act", build: pUpwind },
-  { name: "總整理", kind: "summary", build: pSummary },
-];
+/* =====================================================================
+   7. 3-2 奇妙的空氣 pages
+   ===================================================================== */
+function p32Skeleton() {
+  const cw = 208;
+  const B = [
+    { n: 1, side: "R", yc: 180, title: "空氣在哪裡？", clues: ["🛍️ 揮動塑膠袋", "🫧 吹出泡泡"] },
+    { n: 2, side: "R", yc: 330, title: "空氣流動產生風", clues: ["🌀 電風扇轉轉轉", "🧪 壓注射筒做實驗"] },
+    { n: 3, side: "R", yc: 480, title: "空氣有固定形狀嗎？", clues: ["🎈 氣球、充氣骰子", "📦 裝進各種容器"] },
+    { n: 4, side: "L", yc: 430, title: "空氣占有空間嗎？", clues: ["🥤 杯子壓進水裡", "🧥 羽絨外套收納"] },
+    { n: 5, side: "L", yc: 230, title: "空氣可以被壓縮嗎？", clues: ["👍 拇指壓活塞", "💧 換成水試試看"] },
+  ];
+  for (const b of B) { b.bx = b.side === "R" ? 820 : 512 - cw; b.clueX = b.side === "R" ? 1050 : 50; b.clueW = 233; }
+  skeletonPage(["3-2", "奇妙的空氣"], B, cw, 20);
+}
+function p32Where() {
+  const br = 1;
+  header("1", br, "空氣在哪裡？");
+  const cw = 115, rh = 74, ys = [0, 1, 2, 3, 4].map((i) => 122 + i * 85), x0 = 355, any = ["透明", "無色"];
+  spokes(br, x0, ys, rh);
+  branchNode(br, "🫧", "空氣在哪裡？");
+  [
+    ["揮動袋子，塑膠袋會變得", { b: "鼓鼓" }, "的"],
+    ["在水中擠壓海綿，會產生", { b: "氣泡" }],
+    ["所以，海綿的", { b: "空隙" }, "中有空氣"],
+    ["吹出來的", { b: "泡泡" }, "裡面也有空氣"],
+    ["空氣是", { b: "透明", any }, { b: "無色", any }, "的，存在我們的", { b: "四周" }],
+  ].forEach((p, i) => row(x0, ys[i], p, br, { cw, rh }));
+  note(960, 122, 323, 318, br, [
+    { h: 1, t: "🔍 怎麼找到空氣？", size: 23 },
+    { t: "空氣看不見，也摸不到形狀。" },
+    { t: "可以動手做實驗，把它「找出來」！" },
+  ]).style.padding = "12px 18px";
+  tray(["鼓鼓", "氣泡", "空隙", "泡泡", "透明", "無色", "四周", "扁扁", "白色"], cw);
+}
+function p32Flow() {
+  const br = 2;
+  header("2", br, "空氣流動產生風");
+  const cw = 128, rh = 74, ys = [0, 1, 2, 3, 4].map((i) => 122 + i * 85), x0 = 355;
+  spokes(br, x0, ys, rh);
+  // electric fan illustration
+  const fx = 1160, fy = 230;
+  S("rect", { x: fx - 8, y: fy + 70, width: 16, height: 80, fill: "#90A4AE" });
+  S("ellipse", { cx: fx, cy: fy + 152, rx: 58, ry: 13, fill: "#1976D2" });
+  S("circle", { cx: fx, cy: fy, r: 80, fill: "#E3F2FD", stroke: "#90A4AE", "stroke-width": 3 });
+  const g = S("g", { class: "spin" });
+  g.style.transformOrigin = `${fx}px ${fy}px`;
+  for (let k = 0; k < 3; k++) S("ellipse", { cx: fx, cy: fy - 40, rx: 21, ry: 40, fill: "#4FC3F7", transform: `rotate(${k * 120} ${fx} ${fy})` }, null, g);
+  for (let k = 0; k < 8; k++) L(fx, fy, fx + 80 * Math.cos((k * Math.PI) / 4), fy + 80 * Math.sin((k * Math.PI) / 4), "#B0BEC5", 1.5);
+  S("circle", { cx: fx, cy: fy, r: 15, fill: "#1976D2" });
+  for (const [dy, len] of [[-40, 45], [0, 60], [40, 45]])
+    P(`M ${fx - 98} ${fy + dy} q -${len / 2} -12 -${len} 0`, { stroke: COL[5], "stroke-width": 5, fill: "none", "stroke-linecap": "round" });
+  branchNode(br, "💨", "空氣流動產生風");
+  [
+    ["擠壓塑膠袋，空氣會從袋口", { b: "流出" }, "產生風"],
+    ["搧動扇子，會", { b: "推動" }, "周圍的空氣，產生風"],
+    ["打開", { b: "電風扇" }, "，也可以感覺到風"],
+    ["讓空氣", { b: "流動" }, "，就會產生風"],
+    ["電風扇轉得較快時，產生的風比較", { b: "強" }],
+  ].forEach((p, i) => row(x0, ys[i], p, br, { cw, rh }));
+  tray(["流出", "推動", "電風扇", "流動", "強", "弱", "停止", "吸入"], cw);
+}
+function hSyringe(X, y, fast) {
+  S("rect", { x: X + 30, y: y - 26, width: 10, height: 52, rx: 3, fill: "#78909C" });
+  S("rect", { x: X + 40, y: y - 5, width: 72, height: 10, fill: "#B0BEC5" });
+  S("rect", { x: X + 104, y: y - 34, width: 8, height: 68, fill: "#90A4AE" });
+  S("rect", { x: X + 110, y: y - 22, width: 170, height: 44, rx: 6, fill: "#F5FBFF", stroke: "#78909C", "stroke-width": 2 });
+  S("rect", { x: X + 112, y: y - 20, width: 12, height: 40, fill: "#455A64" });
+  for (let k = 1; k < 8; k++) L(X + 120 + k * 20, y - 22, X + 120 + k * 20, y - 12, "#78909C", 1.5);
+  S("rect", { x: X + 280, y: y - 6, width: 24, height: 12, fill: "#90A4AE" });
+  const n = fast ? 4 : 2;
+  for (let k = 0; k < n; k++) {
+    const yy = y + (k - (n - 1) / 2) * 15;
+    P(`M ${X + 314} ${yy} q ${fast ? 30 : 18} -8 ${fast ? 62 : 36} 0`, { stroke: COL[5], "stroke-width": 3.5, fill: "none", "stroke-linecap": "round" });
+  }
+}
+function p32Syringe() {
+  const br = 2;
+  header("2", br, "實驗：壓注射筒的快慢與風力");
+  const cw = 115;
+  row(50, 116, ["假設：快速壓下注射筒，空氣流動較", { b: "快" }, "，風也會比較強"], br, { cw, rh: 76 });
+  [{ X: 50, fast: false, lab: "🐢 慢慢壓下", th: 30, a1: "低", a2: "弱" }, { X: 677, fast: true, lab: "🐇 快速壓下", th: 78, a1: "高", a2: "強" }]
+    .forEach((p) => {
+      panelRect(p.X, 205, 606, 262, br);
+      div(p.X + 22, 216, 260, 40, "abs", { fontSize: 25, fontWeight: 700, color: COL[br], whiteSpace: "nowrap" }).textContent = p.lab;
+      hSyringe(p.X, 300, p.fast);
+      const gx = p.X + 440;
+      L(gx - 15, 300, gx + 150, 300, COL[5], 2.5, "9 7", { "stroke-linecap": "butt" });
+      S("rect", { x: gx - 3.5, y: 240, width: 7, height: 120, fill: "#D84315" });
+      S("rect", { x: gx - 5, y: 236, width: 50, height: 7, fill: "#CE93D8" });
+      S("ellipse", { cx: gx, cy: 362, rx: 30, ry: 9, fill: "#3949AB" });
+      const tx = gx + 43, ty = 241;
+      S("rect", { x: tx - 8, y: ty, width: 16, height: 100, fill: "#AB47BC", transform: `rotate(${-p.th} ${tx} ${ty})` });
+      row(p.X + 20, 385, ["紙條飄得", { b: p.a1 }], br, { cw, rh: 70 });
+      row(p.X + 320, 385, ["風力比較", { b: p.a2 }], br, { cw, rh: 70 });
+    });
+  row(0, 480, ["空氣流動的快慢，會影響產生的", { b: "風力" }, "強弱"], br, { cw, rh: 74, center: true });
+  tray(["快", "低", "弱", "高", "強", "風力", "慢", "風向"], cw);
+}
+function p32Steps() {
+  const br = 2;
+  header("2", br, "像科學家一樣：探究的步驟");
+  const cw = 156, col = COL[br];
+  arrowDefs(col);
+  const boxes = [
+    { n: 1, x: 50, y: 120, w: 280, fixed: "觀察現象", txt: "電風扇轉得較快時，產生的風比較強。" },
+    { n: 2, x: 365, y: 120, w: 280, a: "提出問題", txt: "為什麼可以產生不同強弱的風？" },
+    { n: 3, x: 680, y: 120, w: 280, a: "蒐集資料", txt: "空氣流動可以產生風；快速搧扇子，風比較強。" },
+    { n: 4, x: 995, y: 120, w: 280, a: "提出假設", txt: "快速壓下注射筒，產生的風也會比較強。" },
+    { n: 5, x: 903, y: 350, w: 380, a: "設計實作", txt: "比一比慢慢壓、快速壓，紙條飄得多高。" },
+    { n: 6, x: 488, y: 350, w: 380, a: "分析驗證", txt: "觀察結果和假設一樣嗎？", loop: true },
+    { n: 7, x: 73, y: 350, w: 380, fixed: "結論", txt: "空氣流動的快慢，會影響產生的風力強弱。" },
+  ];
+  // arrows
+  const A = (x1, y1, x2, y2) => L(x1, y1, x2, y2, col, 4, null, { "marker-end": "url(#ah)" });
+  A(334, 220, 360, 220); A(649, 220, 675, 220); A(964, 220, 990, 220);
+  A(1135, 324, 1110, 346);
+  A(899, 450, 873, 450); A(484, 450, 458, 450);
+  for (const b of boxes) {
+    const e = div(b.x, b.y, b.w, 200, "stepbox", { borderColor: col });
+    e.append(css(mk("div", "num", String(b.n)), { background: col }));
+    if (b.fixed) e.append(css(mk("div", "lab", b.fixed), { color: col }));
+    const t = mk("div", "txt", b.txt);
+    e.append(t);
+    if (b.a) slotAt(b.x + 70, b.y + 12, cw, br, [b.a], `探究步驟第 ${b.n} 步：${b.txt}`);
+    if (b.loop) {
+      e.append(css(mk("div", "", "🔁 不一樣就重新提出"), { position: "absolute", left: 16, top: 140, fontSize: 19, fontWeight: 700, color: "#C62828", whiteSpace: "nowrap" }));
+      slotAt(b.x + 212, b.y + 128, cw, br, ["假設"], "探究步驟：如果結果和假設不一樣，要重新提出（　）");
+    }
+  }
+  tray(["提出問題", "蒐集資料", "提出假設", "設計實作", "分析驗證", "假設", "猜答案"], cw);
+}
+function p32Shape() {
+  const br = 3;
+  header("3", br, "空氣有固定形狀嗎？");
+  const cw = 128;
+  const X = [50, 471.65, 893.3];
+  X.forEach((x, i) => {
+    panelRect(x, 112, 390, 165, br);
+    T(x + 95, 262, "充氣前", 16, "#78909C", { "font-weight": 400 });
+    T(x + 300, 262, "充氣後", 16, "#78909C", { "font-weight": 400 });
+    T(x + 190, 200, "➜", 38, COL[4]);
+  });
+  const nm = ["充氣加油棒", "充氣骰子", "氣球"];
+  nm.forEach((t, i) => T(X[i] + 195, 134, t, 22, COL[br]));
+  // cheering sticks
+  let x = X[0];
+  S("rect", { x: x + 40, y: 178, width: 110, height: 12, fill: "#66BB6A", transform: `rotate(-8 ${x + 95} 184)` });
+  S("rect", { x: x + 45, y: 212, width: 110, height: 12, fill: "#FDD835", transform: `rotate(-8 ${x + 100} 218)` });
+  S("rect", { x: x + 240, y: 168, width: 125, height: 30, rx: 15, fill: "#43A047", transform: `rotate(-10 ${x + 302} 183)` });
+  S("rect", { x: x + 245, y: 212, width: 125, height: 30, rx: 15, fill: "#FBC02D", transform: `rotate(-10 ${x + 307} 227)` });
+  // dice
+  x = X[1];
+  S("polygon", { points: `${x + 55},${185} ${x + 95},${168} ${x + 140},${180} ${x + 150},${222} ${x + 110},${240} ${x + 62},${232}`, fill: "#fff", stroke: "#90A4AE", "stroke-width": 2 });
+  for (const [a, b] of [[80, 195], [115, 190], [100, 215], [130, 210]]) S("circle", { cx: x + a, cy: b, r: 5, fill: "#263238" });
+  S("circle", { cx: x + 75, cy: 218, r: 8, fill: "#E53935" });
+  S("polygon", { points: `${x + 258},${178} ${x + 280},${162} ${x + 350},${162} ${x + 328},${178}`, fill: "#F5F5F5", stroke: "#90A4AE", "stroke-width": 2 });
+  S("polygon", { points: `${x + 328},${178} ${x + 350},${162} ${x + 350},${226} ${x + 328},${244}`, fill: "#E0E0E0", stroke: "#90A4AE", "stroke-width": 2 });
+  S("rect", { x: x + 258, y: 178, width: 70, height: 66, fill: "#fff", stroke: "#90A4AE", "stroke-width": 2 });
+  for (const [a, b] of [[272, 192], [293, 211], [314, 230], [272, 230], [314, 192]]) S("circle", { cx: x + a, cy: b, r: 5, fill: "#263238" });
+  // balloons
+  x = X[2];
+  S("ellipse", { cx: x + 95, cy: 205, rx: 11, ry: 30, fill: "#F06292", transform: `rotate(15 ${x + 95} 205)` });
+  S("polygon", { points: `${x + 99},${232} ${x + 91},${242} ${x + 103},${242}`, fill: "#C2185B" });
+  S("ellipse", { cx: x + 300, cy: 190, rx: 40, ry: 45, fill: "#F06292" });
+  S("ellipse", { cx: x + 287, cy: 174, rx: 9, ry: 14, fill: "#fff", opacity: 0.5 });
+  S("polygon", { points: `${x + 300},${234} ${x + 294},${243} ${x + 306},${243}`, fill: "#C2185B" });
+  row(0, 295, ["空瓶子裡有空氣，海綿的", { b: "空隙" }, "裡也有空氣"], br, { cw, rh: 74, center: true });
+  row(0, 381, ["充氣後，加油棒、骰子、氣球的形狀都", { b: "不一樣" }], br, { cw, rh: 74, center: true });
+  row(0, 467, ["空氣", { b: "沒有" }, "固定的形狀，可以", { b: "填充" }, "在各種形狀的物品中"], br, { cw, rh: 74, center: true });
+  tray(["空隙", "不一樣", "沒有", "填充", "一樣", "有", "倒出"], cw);
+}
+function cupPath(cx, topY, botY, topHalf, botHalf) {
+  return `${cx - topHalf},${topY} ${cx + topHalf},${topY} ${cx + botHalf},${botY} ${cx - botHalf},${botY}`;
+}
+function paperBall(cx, cy, r) {
+  S("circle", { cx, cy, r, fill: "#F48FB1", stroke: "#C2185B", "stroke-width": 1.5 });
+  P(`M ${cx - r * 0.6} ${cy - r * 0.1} l ${r * 0.5} ${r * 0.3} l ${r * 0.4} -${r * 0.5} M ${cx - r * 0.2} ${cy + r * 0.5} l ${r * 0.5} -${r * 0.2}`,
+    { stroke: "#C2185B", "stroke-width": 1.5, fill: "none" });
+}
+function p32Space() {
+  const br = 4;
+  header("4", br, "證明空氣占有空間");
+  const cw = 156;
+  const X = [50, 471.65, 893.3];
+  X.forEach((x) => panelRect(x, 112, 390, 272, br));
+  // panel 1: cup upright with paper ball at the bottom
+  let cx = X[0] + 195;
+  L(X[0] + 60, 290, X[0] + 330, 290, "#B0BEC5", 3);
+  S("polygon", { points: cupPath(cx, 170, 290, 58, 42), fill: "#F5FBFF", stroke: "#78909C", "stroke-width": 3 });
+  paperBall(cx, 266, 24);
+  // panel 2: tank with cup pressed upside-down
+  cx = X[1] + 195;
+  S("rect", { x: cx - 135, y: 175, width: 270, height: 125, fill: "#B3E5FC", opacity: 0.75 });
+  S("rect", { x: cx - 137, y: 140, width: 274, height: 162, fill: "none", stroke: "#78909C", "stroke-width": 3 });
+  S("polygon", { points: cupPath(cx, 190, 300, 40, 56), fill: "#F5FBFF", stroke: "#78909C", "stroke-width": 3 });
+  S("rect", { x: cx - 53, y: 291, width: 106, height: 8, fill: "#81D4FA" });
+  paperBall(cx, 214, 20);
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) S("circle", { cx: cx - 27 + c * 18 + (r % 2) * 6, cy: 248 + r * 14, r: 5, fill: "#E1F5FE", stroke: "#4FC3F7", "stroke-width": 1.5 });
+  blockArrow(cx, 158, 34, 26, 90, COL[4]);
+  // panel 3: cup taken out, paper ball beside it
+  cx = X[2] + 195;
+  L(X[2] + 60, 290, X[2] + 330, 290, "#B0BEC5", 3);
+  S("polygon", { points: cupPath(cx - 60, 180, 290, 40, 56), fill: "#F5FBFF", stroke: "#78909C", "stroke-width": 3 });
+  paperBall(cx + 70, 266, 24);
+  T(cx + 70, 210, "？", 48, COL[1]);
+  row(X[0] + 14, 312, ["① 塞進杯子", { b: "底部" }], br, { cw, rh: 66 });
+  div(X[1], 322, 390, 46, "cap").textContent = "② 壓入水箱底部";
+  div(X[2], 322, 390, 46, "cap").textContent = "③ 拿出杯子，取出紙團";
+  row(50, 398, ["杯口要朝", { b: "下" }, "，垂直壓入水箱底部"], br, { cw, rh: 70 });
+  row(668, 398, ["拿出紙團，紙團", { b: "沒有" }, "溼掉"], br, { cw, rh: 70 });
+  row(0, 482, ["因為空氣", { b: "占有空間" }, "，所以水不會占滿杯子"], br, { cw, rh: 70, center: true });
+  tray(["底部", "下", "沒有", "占有空間", "上", "有", "開口"], cw);
+}
+function p32Storage() {
+  const br = 4;
+  header("4", br, "充電站：節省空間的收納方法");
+  const cw = 128, rh = 80, ys = [0, 1, 2, 3].map((i) => 130 + i * 104), x0 = 355;
+  spokes(br, x0, ys, rh);
+  // jacket illustration (before -> after)
+  S("rect", { x: 990, y: 150, width: 110, height: 140, rx: 26, fill: "#3F51B5" });
+  for (let k = 0; k < 4; k++) L(996, 182 + k * 28, 1094, 182 + k * 28, "#7986CB", 3);
+  S("rect", { x: 958, y: 158, width: 34, height: 110, rx: 16, fill: "#3949AB", transform: "rotate(12 975 213)" });
+  S("rect", { x: 1098, y: 158, width: 34, height: 110, rx: 16, fill: "#3949AB", transform: "rotate(-12 1115 213)" });
+  T(1045, 310, "收納前", 17, "#78909C", { "font-weight": 400 });
+  T(1158, 220, "➜", 40, COL[br]);
+  S("rect", { x: 1200, y: 190, width: 72, height: 70, rx: 18, fill: "#3F51B5" });
+  L(1200, 212, 1272, 212, "#ECEFF1", 3); L(1200, 238, 1272, 238, "#ECEFF1", 3);
+  T(1236, 280, "收納後", 17, "#78909C", { "font-weight": 400 });
+  branchNode(br, "🧥", "節省空間收納法");
+  [
+    ["羽絨外套裡有許多", { b: "空氣" }],
+    ["空氣占有空間，所以收納時很", { b: "占空間" }],
+    ["把空氣", { b: "擠壓" }, "出來，外套占的空間會變", { b: "小" }],
+    ["這樣不但", { b: "節省" }, "空間，也更方便收納"],
+  ].forEach((p, i) => row(x0, ys[i], p, br, { cw, rh }));
+  tray(["空氣", "占空間", "擠壓", "小", "節省", "大", "吹進", "水"], cw);
+}
+function vSyringe(cx, top, bot, pY, water, label) {
+  S("rect", { x: cx - 6, y: pY - 70, width: 12, height: 70, fill: "#B0BEC5" });
+  S("rect", { x: cx - 30, y: pY - 78, width: 60, height: 10, rx: 4, fill: "#78909C" });
+  S("rect", { x: cx - 30, y: top, width: 60, height: bot - top, rx: 6, fill: "#F5FBFF", stroke: "#78909C", "stroke-width": 2.5 });
+  if (water) S("rect", { x: cx - 28, y: pY + 12, width: 56, height: bot - pY - 14, fill: "#4FC3F7", opacity: 0.75 });
+  else {
+    const h = bot - pY - 36;
+    for (let r = 0; r < 5; r++) for (let c = 0; c < 3; c++)
+      S("circle", { cx: cx - 15 + c * 15, cy: pY + 20 + (r * h) / 4, r: 4.5, fill: "#E1F5FE", stroke: "#29B6F6", "stroke-width": 1.5 });
+  }
+  S("rect", { x: cx - 48, y: top - 8, width: 96, height: 8, rx: 3, fill: "#90A4AE" });
+  for (let k = 0; k < 6; k++) L(cx + 16, top + 14 + k * ((bot - top - 20) / 5), cx + 28, top + 14 + k * ((bot - top - 20) / 5), "#78909C", 1.5);
+  S("rect", { x: cx - 28, y: pY, width: 56, height: 12, fill: "#37474F" });
+  S("rect", { x: cx - 6, y: bot, width: 12, height: 14, fill: "#90A4AE" });
+  S("rect", { x: cx - 55, y: bot + 14, width: 110, height: 18, rx: 3, fill: "#263238" });
+  if (label) T(cx + 62, pY - 74, label, 19, COL[0]);
+}
+function p32Compress() {
+  const br = 5;
+  header("5", br, "空氣可以被壓縮嗎？");
+  const cw = 128;
+  const X = [50, 471.65, 893.3];
+  const st = [{ pY: 200, lab: "", parts: ["筒口抵在", { b: "橡膠塊" }, "上"] }, { pY: 250, lab: "👍 下壓", parts: ["下壓時，活塞", { b: "往下" }] },
+    { pY: 204, lab: "👍 放開", parts: ["放開後，活塞", { b: "往上" }] }];
+  X.forEach((x, i) => {
+    panelRect(x, 112, 390, 300, br);
+    const cx = x + 165;
+    L(cx - 75, 206, cx + 75, 206, "#EF9A9A", 2, "6 6");
+    if (i > 0) T(cx + 120, 206, "原來位置", 15, "#E57373", { "font-weight": 400 });
+    vSyringe(cx, 190, 300, st[i].pY, false, st[i].lab);
+    if (i === 0) T(cx + 100, 322, "← 抵住", 18, COL[0], { "font-weight": 400 });
+    T(x + 34, 134, CIRC(i + 1), 26, COL[br]);
+    row(x + 14, 338, st[i].parts, br, { cw, rh: 66 });
+  });
+  row(0, 428, ["空氣被擠壓時，占有的空間大小被", { b: "改變" }, "，表示空氣可以被", { b: "壓縮" }], br, { cw, rh: 74, center: true });
+  tray(["橡膠塊", "往下", "往上", "改變", "壓縮", "不動", "鐵塊"], cw);
+}
+function p32Water() {
+  const br = 5;
+  header("5", br, "充電站：水也可以被壓縮嗎？");
+  const cw = 115;
+  [[50, "空氣", false, 330], [315, "水", true, 240]].forEach(([x, nm, water, pY]) => {
+    panelRect(x, 112, 245, 440, br);
+    const cx = x + 112;
+    L(cx - 70, 246, cx + 70, 246, "#EF9A9A", 2, "6 6");
+    vSyringe(cx, 230, 440, pY, water, "👍 下壓");
+    T(x + 122, 500, nm, 34, water ? "#0288D1" : COL[0]);
+    L(x + 50, 536, x + 90, 536, "#EF9A9A", 2, "6 6");
+    T(x + 140, 536, "原來位置", 15, "#E57373", { "font-weight": 400 });
+  });
+  row(600, 135, ["空氣", { b: "可以" }, "被壓縮"], br, { cw });
+  row(600, 235, ["水", { b: "無法" }, "被壓縮"], br, { cw });
+  row(600, 335, ["水也占有空間，也沒有固定的", { b: "形狀" }], br, { cw });
+  row(600, 435, ["壓水的注射筒，活塞位置", { b: "沒有" }, "移動"], br, { cw });
+  tray(["可以", "無法", "形狀", "沒有", "有", "顏色"], cw);
+}
+function p32Summary() {
+  summaryPage(["🎈", "3-2", "奇妙的空氣"], [
+    { n: 1, side: "R", y: 115, title: "空氣在哪裡？", items: ["揮動塑膠袋，袋子變得鼓鼓的", "海綿的空隙、泡泡裡都有空氣", "空氣透明無色，存在我們四周"] },
+    { n: 2, side: "R", y: 320, title: "空氣流動產生風", items: ["擠壓袋子、搧扇子、開電風扇", "空氣流動就會產生風", "流動愈快，產生的風力愈強", "探究：從觀察現象到結論"] },
+    { n: 3, side: "R", y: 525, title: "空氣有固定形狀嗎？", items: ["空氣沒有固定的形狀", "可以填充在各種形狀的物品中", "例：氣球、充氣骰子、加油棒"] },
+    { n: 4, side: "L", y: 525, title: "空氣占有空間嗎？", items: ["杯口朝下壓入水中，紙團不會溼", "空氣占有空間，水不會占滿杯子", "氣球充氣後變鼓鼓的"] },
+    { n: 5, side: "L", y: 320, title: "空氣可以被壓縮嗎？", items: ["下壓：活塞往下；放開：往上", "空氣被擠壓，占的空間變小", "表示空氣可以被壓縮"] },
+    { n: 6, side: "L", y: 115, title: "充電站", items: ["羽絨外套擠出空氣，節省空間", "水占有空間、沒有固定形狀", "但是水無法被壓縮"] },
+  ]);
+}
 
-/* ================== navigation & layout ================== */
-let cur = Math.min(Math.max(+saved.page || 0, 0), PAGES.length - 1);
-function render() {
+/* =====================================================================
+   8. characters (original SVG art)
+   ===================================================================== */
+const HERO_SVG = `<svg viewBox="0 0 210 270">
+ <path d="M62 150 Q42 222 30 262 L176 262 Q164 222 142 150 Z" fill="#E8604C"/>
+ <rect x="74" y="218" width="18" height="32" rx="6" fill="#1B4F72"/><rect x="112" y="218" width="18" height="32" rx="6" fill="#1B4F72"/>
+ <ellipse cx="83" cy="252" rx="15" ry="7" fill="#37474F"/><ellipse cx="121" cy="252" rx="15" ry="7" fill="#37474F"/>
+ <rect x="64" y="140" width="76" height="84" rx="20" fill="#fff" stroke="#B0BEC5" stroke-width="3"/>
+ <circle cx="102" cy="180" r="14" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/>
+ <text x="102" y="181" font-size="15" text-anchor="middle" dominant-baseline="central" font-weight="700" fill="#5D4037">科</text>
+ <path d="M66 160 L46 188" stroke="#FFD7B5" stroke-width="13" stroke-linecap="round"/>
+ <path d="M138 160 L170 130" stroke="#FFD7B5" stroke-width="13" stroke-linecap="round"/>
+ <path d="M170 130 L184 104" stroke="#6D4C41" stroke-width="7" stroke-linecap="round"/>
+ <polygon points="187,80 192,94 207,94 195,103 199,117 187,109 175,117 179,103 167,94 182,94" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/>
+ <circle cx="102" cy="92" r="52" fill="#FFD7B5"/>
+ <path d="M52 88 Q54 36 102 36 Q152 36 154 88 Q144 60 124 56 L128 70 L110 54 L106 68 L92 54 L88 68 L74 56 Q58 64 52 88Z" fill="#3E2723"/>
+ <rect x="52" y="64" width="100" height="10" rx="5" fill="#37474F"/>
+ <circle cx="82" cy="69" r="16" fill="#81D4FA" stroke="#37474F" stroke-width="4"/><circle cx="122" cy="69" r="16" fill="#81D4FA" stroke="#37474F" stroke-width="4"/>
+ <circle cx="77" cy="64" r="4" fill="#fff"/><circle cx="117" cy="64" r="4" fill="#fff"/>
+ <ellipse cx="84" cy="101" rx="5.5" ry="7.5" fill="#263238"/><ellipse cx="120" cy="101" rx="5.5" ry="7.5" fill="#263238"/>
+ <circle cx="70" cy="115" r="7" fill="#FFAB91" opacity=".7"/><circle cx="134" cy="115" r="7" fill="#FFAB91" opacity=".7"/>
+ <path d="M90 119 Q102 132 114 119" stroke="#263238" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+const WIND_SVG = `<svg viewBox="0 0 300 320">
+ <path d="M18 150 q 20 -14 40 0" stroke="#B3CDE0" stroke-width="6" fill="none" stroke-linecap="round"/>
+ <path d="M244 196 q 22 -14 44 0" stroke="#B3CDE0" stroke-width="6" fill="none" stroke-linecap="round"/>
+ <path d="M28 236 q 15 -10 30 0" stroke="#B3CDE0" stroke-width="5" fill="none" stroke-linecap="round"/>
+ <path d="M80 72 Q58 28 92 16 Q86 44 106 62Z" fill="#5C6BC0"/><path d="M220 72 Q242 28 208 16 Q214 44 194 62Z" fill="#5C6BC0"/>
+ <path d="M38 82 Q150 28 262 82 Q232 150 202 210 Q182 256 162 292 Q150 304 138 292 Q118 256 98 210 Q68 150 38 82Z" fill="#7FA6C6"/>
+ <path d="M60 96 Q150 70 240 96" stroke="#fff" stroke-width="6" fill="none" opacity=".55" stroke-linecap="round"/>
+ <path d="M86 162 Q150 142 214 162" stroke="#fff" stroke-width="6" fill="none" opacity=".5" stroke-linecap="round"/>
+ <path d="M110 222 Q150 206 190 222" stroke="#fff" stroke-width="6" fill="none" opacity=".5" stroke-linecap="round"/>
+ <path d="M132 266 Q150 259 168 266" stroke="#fff" stroke-width="5" fill="none" opacity=".5" stroke-linecap="round"/>
+ <ellipse cx="114" cy="124" rx="25" ry="21" fill="#fff"/><ellipse cx="186" cy="124" rx="25" ry="21" fill="#fff"/>
+ <circle cx="120" cy="129" r="10" fill="#1A237E"/><circle cx="180" cy="129" r="10" fill="#1A237E"/>
+ <path d="M86 98 L138 112" stroke="#263238" stroke-width="7" stroke-linecap="round"/><path d="M214 98 L162 112" stroke="#263238" stroke-width="7" stroke-linecap="round"/>
+ <path d="M108 170 Q150 208 192 170 Q150 186 108 170Z" fill="#263238"/>
+ <polygon points="120,175 129,176 125,187" fill="#fff"/><polygon points="171,176 180,175 175,187" fill="#fff"/>
+</svg>`;
+const AIR_SVG = `<svg viewBox="0 0 300 320">
+ <path d="M150 272 q -14 16 0 28 q 14 12 0 20" stroke="#4FC3F7" stroke-width="4" fill="none"/>
+ <polygon points="139,262 161,262 150,277" fill="#4FC3F7"/>
+ <circle cx="150" cy="148" r="116" fill="#B3E5FC" fill-opacity=".85" stroke="#4FC3F7" stroke-width="5"/>
+ <ellipse cx="98" cy="90" rx="34" ry="19" fill="#fff" opacity=".75" transform="rotate(-30 98 90)"/>
+ <ellipse cx="112" cy="140" rx="23" ry="29" fill="#fff"/><ellipse cx="188" cy="140" rx="23" ry="29" fill="#fff"/>
+ <circle cx="118" cy="147" r="11" fill="#01579B"/><circle cx="182" cy="147" r="11" fill="#01579B"/>
+ <circle cx="121" cy="143" r="3.5" fill="#fff"/><circle cx="185" cy="143" r="3.5" fill="#fff"/>
+ <path d="M84 110 L130 118" stroke="#0277BD" stroke-width="6" stroke-linecap="round"/><path d="M216 110 L170 118" stroke="#0277BD" stroke-width="6" stroke-linecap="round"/>
+ <path d="M104 192 Q150 236 196 192 Z" fill="#0277BD"/>
+ <path d="M138 206 Q150 226 162 206 Z" fill="#F48FB1"/>
+ <circle cx="30" cy="70" r="16" fill="#E1F5FE" stroke="#4FC3F7" stroke-width="3"/>
+ <circle cx="278" cy="96" r="12" fill="#E1F5FE" stroke="#4FC3F7" stroke-width="3"/>
+ <circle cx="270" cy="232" r="18" fill="#E1F5FE" stroke="#4FC3F7" stroke-width="3"/>
+ <circle cx="24" cy="222" r="10" fill="#E1F5FE" stroke="#4FC3F7" stroke-width="3"/>
+</svg>`;
+const MONSTERS = {
+  wind: { name: "風之獸", svg: WIND_SVG, idle: "sway", atk: "💨", bg: "linear-gradient(#4A6F95, #A9C6DE)",
+    intro: "呼呼呼！我是風之獸！答不出風力和風向的問題，我就把你吹走！" },
+  air: { name: "空氣怪", svg: AIR_SVG, idle: "wobble", atk: "🫧", bg: "linear-gradient(#3FA0C8, #CDEFFA)",
+    intro: "嘻嘻，我是看不見的空氣怪！你真的了解空氣嗎？" },
+};
+
+/* =====================================================================
+   9. course data: lessons, units, pages, boss questions
+   ===================================================================== */
+const Q31 = [
+  ["看到物體飄動或轉動，就知道有（　）。", "風", ["水", "光"], "物體飄動或轉動，就表示有風。"],
+  ["風的強弱叫做什麼？", "風力", ["風向", "方位"], "風的強弱稱為「風力」。"],
+  ["旗子飄得愈高，表示風力愈（　）。", "強", ["弱", "沒有改變"], "旗子飄得愈高，風力愈強。"],
+  ["風強的時候，風車會轉得比較（　）。", "快", ["慢", "完全不轉"], "風弱時風車轉得慢，風強時轉得快。"],
+  ["用東、西、南、北來表示的是（　）。", "方位", ["風力", "溫度"], "東、西、南、北是「方位」。"],
+  ["方位會因為觀測者站的位置不同而改變嗎？", "不會", ["會", "有時候會"], "方位不會因觀測者的位置而改變。"],
+  ["指北針上，指向北方的那一端叫做（　）。", "指北端", ["指南端", "方位盤"], "指向北方的一端是指北端。"],
+  ["使用指北針時，要先把指北針（　），等指針停止轉動。", "平放", ["立起來", "搖一搖"], "指北針要平放，等指針停下來。"],
+  ["使用指北針時，不可以靠近哪一樣東西？", "磁鐵", ["木頭", "紙張"], "不可靠近電器、鐵製品和磁鐵。"],
+  ["北方和東方的中間，是哪一個方位？", "東北", ["北東", "西北"], "斜方位要把「東」、「西」說在前面：東北。"],
+  ["南方和西方的中間，是哪一個方位？", "西南", ["南西", "東南"], "南和西中間是西南。"],
+  ["風（　）的方向，就是風向。", "吹過來", ["吹過去", "停下來"], "風吹過來的方向就是風向。"],
+  ["鯉魚旗飄向東方，這時候吹的是什麼風？", "西風", ["東風", "北風"], "旗子飄向東方，表示風從西方吹來，是西風。"],
+  ["記錄風向時，箭頭要從風吹來的方向畫向（　）。", "中心點", ["外面", "任意方向"], "箭頭要指向中心點。"],
+  ["風力風向計上，能隨風「轉動」的裝置是用來判斷（　）。", "風向", ["風力", "溫度"], "隨風轉動判斷風向，隨風飄動判斷風力。"],
+  ["紙條下垂、沒有飄動，表示（　）。", "無風", ["弱風", "強風"], "紙條沒有飄動就是無風。"],
+  ["紙條飄起來，而且高於記號，表示（　）。", "強風", ["弱風", "無風"], "高於記號是強風，低於記號是弱風。"],
+  ["觀測風力和風向時，要選擇什麼樣的地點？", "空曠的地方", ["很多大樓的地方", "教室裡面"], "要選擇空曠的地點觀測。"],
+  ["紙飛機在哪一種風的情況下飛得比較遠？", "順風", ["逆風", "側風"], "順風時，紙飛機飛得比較遠。"],
+  ["比較靠近風吹來方向的地方，叫做（　）。", "上風處", ["下風處", "中心點"], "靠近風的來處是上風處。"],
+  ["在下風處聞到臭味，應該移動到哪裡？", "上風處", ["更遠的下風處", "原地不動"], "移到上風處就聞不到臭味了。"],
+  ["「占盡上風」表示處於（　）。", "優勢", ["劣勢", "危險"], "上風常用來形容優勢，下風形容劣勢。"],
+];
+const Q32 = [
+  ["揮動塑膠袋後，袋子變得鼓鼓的，表示裡面充滿了（　）。", "空氣", ["水", "沙子"], "塑膠袋鼓起來，裡面充滿了空氣。"],
+  ["在水中擠壓海綿會產生氣泡，表示海綿的空隙中有（　）。", "空氣", ["泥土", "糖"], "海綿的空隙中有空氣。"],
+  ["空氣是什麼顏色的？", "透明無色", ["白色", "淡藍色"], "空氣是透明無色的。"],
+  ["空氣存在哪裡？", "我們的四周", ["只在天空上", "只在塑膠袋裡"], "空氣存在我們的四周。"],
+  ["擠壓塑膠袋，空氣從袋口流出，會產生（　）。", "風", ["雨", "光"], "空氣流動就會產生風。"],
+  ["搧動扇子會產生風，是因為扇子（　）了周圍的空氣。", "推動", ["吃掉", "冰凍"], "扇子推動了周圍的空氣。"],
+  ["電風扇轉得比較快時，產生的風會比較（　）。", "強", ["弱", "沒有改變"], "轉得愈快，產生的風愈強。"],
+  ["快速壓下注射筒時，風力風向計的紙條會飄得比較（　）。", "高", ["低", "完全不動"], "空氣流動快，風力強，紙條飄得高。"],
+  ["空氣流動的快慢，會影響產生的（　）強弱。", "風力", ["方位", "顏色"], "空氣流動快慢會影響風力強弱。"],
+  ["科學探究時，「觀察現象」之後，下一步是（　）。", "提出問題", ["結論", "設計實作"], "觀察現象→提出問題→蒐集資料→提出假設…"],
+  ["實驗結果和假設不一樣時，應該怎麼做？", "重新提出假設", ["偷偷改掉結果", "不用理它"], "結果和假設不一樣，要重新提出假設。"],
+  ["氣球、充氣骰子充氣後形狀都不一樣，表示空氣（　）固定的形狀。", "沒有", ["有", "只有圓形"], "空氣沒有固定的形狀。"],
+  ["空氣可以填充在（　）的物品中。", "各種形狀", ["只有圓形", "只有方形"], "空氣可以填充在各種形狀的物品中。"],
+  ["塞了紙團的杯子，杯口朝下垂直壓入水中，紙團會怎樣？", "不會溼", ["全部溼掉", "浮出水面"], "杯子裡有空氣，紙團不會溼。"],
+  ["杯子裡的紙團不會溼，是因為空氣（　）。", "占有空間", ["是透明的", "會流動"], "空氣占有空間，水不會占滿杯子。"],
+  ["羽絨外套收納時很占空間，是因為裡面有許多（　）。", "空氣", ["水", "石頭"], "羽絨外套裡有許多空氣。"],
+  ["把羽絨外套裡的空氣擠壓出來，外套占的空間會變（　）。", "小", ["大", "沒有改變"], "擠出空氣，外套占的空間變小。"],
+  ["注射筒口抵住，拇指往下壓，活塞會（　）。", "往下移動", ["往上移動", "完全不動"], "空氣被壓縮，活塞往下移動。"],
+  ["拇指放開後，活塞會（　）。", "往上移動", ["繼續往下移動", "不見了"], "放開後，活塞會往上移動。"],
+  ["注射筒裡的空氣被擠壓時，占有的空間變小，表示空氣可以被（　）。", "壓縮", ["溶解", "燃燒"], "空氣可以被壓縮。"],
+  ["把注射筒裡的空氣換成水，用力往下壓，活塞會怎樣？", "沒有移動", ["往下移動很多", "往上彈開"], "水被擠壓時，活塞位置沒有移動。"],
+  ["水（　）被壓縮。", "無法", ["可以", "有時候可以"], "水占有空間的大小沒有改變，所以水無法被壓縮。"],
+];
+const LESSONS = [
+  { id: "L3", no: "第三課", title: "風與空氣", icon: "🌬️", units: [
+    { id: "3-1", title: "風力與風向", crumb: "3-1 風力與風向", icon: "🎏", color: 1, monster: "wind", questions: Q31, pages: [
+      { id: "skel", name: "心智圖骨架", kind: "act", build: p31Skeleton },
+      { id: "strength", name: "① 判斷風的強弱", kind: "act", build: p31Strength },
+      { id: "compass", name: "② 方位與指北針", kind: "act", build: p31Compass },
+      { id: "compassUse", name: "② 指北針的使用方法", kind: "act", build: p31CompassUse },
+      { id: "eight", name: "③ 八個方位", kind: "act", build: p31Eight },
+      { id: "direction", name: "③ 判斷風向", kind: "act", build: p31Direction },
+      { id: "gauge", name: "④ 自製風力風向計", kind: "act", build: p31Gauge },
+      { id: "observe", name: "④ 觀測風力", kind: "act", build: p31Observe },
+      { id: "plane", name: "⑤ 風的遊戲", kind: "act", build: p31Plane },
+      { id: "upwind", name: "⑥ 上風處與下風處", kind: "act", build: p31Upwind },
+      { id: "summary", name: "總整理", kind: "summary", build: p31Summary },
+    ] },
+    { id: "3-2", title: "奇妙的空氣", crumb: "3-2 奇妙的空氣", icon: "🎈", color: 5, monster: "air", questions: Q32, pages: [
+      { id: "skel", name: "心智圖骨架", kind: "act", build: p32Skeleton },
+      { id: "where", name: "① 空氣在哪裡？", kind: "act", build: p32Where },
+      { id: "flow", name: "② 空氣流動產生風", kind: "act", build: p32Flow },
+      { id: "syringe", name: "② 注射筒實驗", kind: "act", build: p32Syringe },
+      { id: "steps", name: "② 探究的步驟", kind: "act", build: p32Steps },
+      { id: "shape", name: "③ 空氣有固定形狀嗎？", kind: "act", build: p32Shape },
+      { id: "space", name: "④ 空氣占有空間嗎？", kind: "act", build: p32Space },
+      { id: "storage", name: "④ 收納方法", kind: "act", build: p32Storage },
+      { id: "compress", name: "⑤ 空氣可以被壓縮嗎？", kind: "act", build: p32Compress },
+      { id: "water", name: "⑤ 水也可以被壓縮嗎？", kind: "act", build: p32Water },
+      { id: "summary", name: "總整理", kind: "summary", build: p32Summary },
+    ] },
+    { id: "3-3", title: "第三單元", crumb: "3-3", icon: "🔒", coming: true, pages: [] },
+  ] },
+  { id: "L4", no: "第四課", title: "奇妙的溶解", icon: "🧂", coming: true, units: [] },
+];
+const UNITS = {};
+LESSONS.forEach((l) => l.units.forEach((u) => { u.lesson = l; UNITS[u.id] = u; }));
+function lessonOf(u) { return u.lesson; }
+function acts(u) { return u.pages.filter((p) => p.kind === "act"); }
+function doneActs(u) { const st = saved.stars[u.id] || {}; return acts(u).filter((p) => st[p.id]); }
+function unitStars(u) { const st = saved.stars[u.id] || {}; return acts(u).reduce((a, p) => a + (st[p.id] || 0), 0); }
+function readyUnits(l) { return l.units.filter((u) => !u.coming); }
+function bossOpen(l) { return !!saved.unlockBoss || readyUnits(l).every((u) => doneActs(u).length === acts(u).length); }
+
+/* =====================================================================
+   10. screens
+   ===================================================================== */
+function renderScreen() {
   drag = null; selected = null; overSlot = null;
-  ctx = newCtx();
-  ctx.stage.classList.remove("cover");
-  PAGES[cur].build();
+  const loc = saved.loc || { screen: "home" };
+  if (loc.screen === "unit" && UNITS[loc.unit] && !UNITS[loc.unit].coming) {
+    curUnit = UNITS[loc.unit];
+    curPage = Math.min(Math.max(loc.page || 0, 0), curUnit.pages.length - 1);
+    ctx = newCtx();
+    curUnit.pages[curPage].build();
+  } else if (loc.screen === "lesson") {
+    curUnit = null; screenLesson(LESSONS.find((l) => l.id === loc.lesson) || LESSONS[0]);
+  } else if (loc.screen === "boss" && UNITS[loc.unit]) {
+    curUnit = UNITS[loc.unit]; screenBoss(curUnit);
+  } else if (loc.screen === "admin" && adminOK) {
+    curUnit = null; screenAdmin();
+  } else {
+    saved.loc = { screen: "home" };
+    curUnit = null; screenHome();
+  }
   renderNav();
   fit();
 }
-function go(i) {
-  if (i < 0 || i >= PAGES.length) return;
-  cur = i; saved.page = i; persist();
-  render();
+function show(loc) { saved.loc = loc; persist(); renderScreen(); }
+function goPage(i) {
+  if (!curUnit || i < 0 || i >= curUnit.pages.length) return;
+  show({ screen: "unit", unit: curUnit.id, page: i });
+}
+
+function screenHome() {
+  ctx = newCtx("sky");
+  for (const [x, y, w, h] of [[430, 30, 220, 70], [-60, 640, 340, 110], [1120, 660, 260, 80], [40, 20, 170, 55], [880, 40, 160, 50]]) div(x, y, w, h, "cloud");
+  div(60, 64, 520, 100, "abs", { color: "#fff", fontSize: 76, fontWeight: 700, textShadow: "0 4px 8px rgba(0,0,0,.2)", whiteSpace: "nowrap" }).textContent = "科學小勇士";
+  div(64, 170, 520, 50, "abs", { color: "#fff", fontSize: 29, fontWeight: 700, whiteSpace: "nowrap" }).textContent = "三年級自然（翰林版）闖關島";
+  const hero = div(110, 250, 300, 386, "fighter bob");
+  hero.innerHTML = HERO_SVG;
+  LESSONS.forEach((l, i) => {
+    const card = div(530, i === 0 ? 70 : 445, 753, i === 0 ? 345 : 150, "lessonCard" + (l.coming ? " off" : ""));
+    card.append(mk("h3", "", `${l.icon} ${l.no} ${l.title}`));
+    if (l.coming) {
+      card.append(css(mk("div", "", "🔒 即將開放，敬請期待！"), { fontSize: 24, color: "#78909C" }));
+      return;
+    }
+    const chips = mk("div", "chips");
+    for (const u of l.units) {
+      if (u.coming) { chips.append(mk("span", "chipU off", `🔒 ${u.id} 即將開放`)); continue; }
+      chips.append(mk("span", "chipU", `${u.icon} ${u.id} ${u.title}　★${unitStars(u)}/${acts(u).length * 3}`));
+    }
+    card.append(chips);
+    const open = bossOpen(l);
+    const beaten = readyUnits(l).filter((u) => saved.boss[u.id] && saved.boss[u.id].wins).length;
+    const bossLine = readyUnits(l).map((u) => MONSTERS[u.monster].name).join("、");
+    card.append(css(mk("div", "", (open ? (beaten === readyUnits(l).length ? "🏆 已打敗大魔王：" : "⚔️ 大魔王出現了：") : "🔒 大魔王：") + bossLine),
+      { fontSize: 24, fontWeight: 700, color: open ? "#C62828" : "#78909C", marginTop: 18 }));
+    const btn = mk("button", "bigBtn", "進入 ▶");
+    css(btn, { right: 28, bottom: 24, width: 200, height: 72 });
+    btn.onclick = () => { unlockAudio(); show({ screen: "lesson", lesson: l.id }); };
+    card.append(btn);
+  });
+  const how = mk("button", "bigBtn ghost", "❓ 怎麼玩");
+  css(how, { left: 530, top: 630, width: 250, height: 70, fontSize: 26 });
+  how.onclick = howTo;
+  const adm = mk("button", "bigBtn ghost", "🔒 家長後台");
+  css(adm, { left: 800, top: 630, width: 250, height: 70, fontSize: 26 });
+  adm.onclick = gate;
+  ctx.layer.append(how, adm);
+}
+function howTo() {
+  const p = overlayPanel("wide");
+  p.append(mk("h2", "", "👋 怎麼玩？"));
+  const ul = mk("ul", "howlist");
+  [
+    "按住黃色詞卡，拖到虛線框裡；也可以先點詞卡，再點虛線框。",
+    "放對會變綠色 ✓，放錯會彈回去。小心陷阱卡！",
+    "每一頁完成就能拿星星 ⭐，最後一頁是總整理心智圖。",
+    "一整課的關卡都完成後，大魔王就會出現！",
+    "打魔王：答對，科學小勇士就攻擊；答錯會被反擊，那一題等一下還會再出現。",
+  ].forEach((t, i) => { const li = mk("li"); li.append(css(mk("b", "", String(i + 1)), { background: COL[(i % 6) + 1] }), mk("span", "", t)); ul.append(li); });
+  p.append(ul);
+  const demoBox = mk("div");
+  css(demoBox, { position: "relative", height: 70, margin: "0 0 10px" });
+  const d = mk("div", "card demo", "風力"); css(d, { left: 120, top: 0, width: 115 });
+  const box = mk("div", "slot abs"); css(box, { left: 357, top: 0, width: 115, borderColor: COL[5], pointerEvents: "none" });
+  const ar = css(mk("div", "", "➜"), { position: "absolute", left: 258, top: -2, fontSize: 48, color: COL[4] });
+  demoBox.append(box, ar, d);
+  p.append(demoBox);
+  const acts_ = mk("div", "acts");
+  const ok = mk("button", "btn primary", "知道了！"); ok.onclick = p.close;
+  acts_.append(ok); p.append(acts_);
+}
+
+function screenLesson(l) {
+  ctx = newCtx("sky");
+  for (const [x, y, w, h] of [[380, 30, 200, 60], [-40, 660, 300, 100], [600, 690, 280, 70]]) div(x, y, w, h, "cloud");
+  div(50, 30, 800, 70, "abs", { color: "#fff", fontSize: 46, fontWeight: 700, textShadow: "0 3px 6px rgba(0,0,0,.2)", whiteSpace: "nowrap" })
+    .textContent = `${l.icon} ${l.no} ${l.title}`;
+  const pos = [[165, 385], [445, 235], [725, 405]];
+  P(`M ${pos[0][0]} ${pos[0][1]} C 245 225, 345 205, ${pos[1][0]} ${pos[1][1]} S 645 425, ${pos[2][0]} ${pos[2][1]} S 860 330, 905 360`,
+    { stroke: "#fff", "stroke-width": 10, fill: "none", "stroke-dasharray": "2 22", "stroke-linecap": "round", opacity: 0.85 });
+  l.units.forEach((u, i) => {
+    const [cx, cy] = pos[i] || [150 + i * 270, 330];
+    const n = div(cx - 105, cy - 95, 210, null, "unitNode" + (u.coming ? " off" : ""));
+    const disc = mk("div", "disc");
+    disc.style.borderColor = u.coming ? "#B0BEC5" : COL[u.color];
+    disc.append(mk("div", "ic", u.icon), mk("div", "no", u.id));
+    n.append(disc, mk("div", "nm", u.coming ? "即將開放" : u.title));
+    if (!u.coming) {
+      const d = doneActs(u).length, a = acts(u).length;
+      n.append(mk("div", "pg", `完成 ${d}/${a} 關・★${unitStars(u)}`));
+      n.onclick = () => {
+        unlockAudio();
+        const st = saved.stars[u.id] || {};
+        const first = u.pages.findIndex((p) => p.kind === "act" && !st[p.id]);
+        show({ screen: "unit", unit: u.id, page: first < 0 ? 0 : first });
+      };
+    }
+  });
+  // boss card
+  const open = bossOpen(l);
+  const bc = div(905, 120, 380, 560, "bossCard");
+  bc.append(mk("h3", "", open ? "⚔️ 大魔王出現了！" : "🔒 大魔王關"));
+  bc.append(mk("div", "sub", open ? "選一隻大魔王來挑戰吧！每隻會考完整個單元的重點。"
+    : `完成 ${readyUnits(l).map((u) => u.id).join("、")} 全部關卡，大魔王就會出現！`));
+  for (const u of readyUnits(l)) {
+    const m = MONSTERS[u.monster], rec = saved.boss[u.id];
+    const row_ = mk("div", "mon");
+    const av = mk("div", "av"); av.innerHTML = m.svg;
+    const info = mk("div", "info");
+    info.append(mk("b", "", m.name), mk("span", "", `${u.id}・${u.questions.length} 題` +
+      (rec && rec.wins ? `\n🏆 已打敗（最佳 ${"⭐".repeat(rec.best || 1)}）` : rec && rec.tries ? `\n挑戰 ${rec.tries} 次` : "")));
+    info.lastChild.style.whiteSpace = "pre-line";
+    const b = mk("button", "", rec && rec.wins ? "再戰" : "挑戰");
+    b.disabled = !open;
+    b.onclick = () => { unlockAudio(); show({ screen: "boss", unit: u.id }); };
+    row_.append(av, info, b);
+    bc.append(row_);
+  }
+  const allWin = open && readyUnits(l).every((u) => saved.boss[u.id] && saved.boss[u.id].wins);
+  if (allWin) bc.append(css(mk("div", "", "🏆 你打敗了所有大魔王！"), { marginTop: 16, fontSize: 24, fontWeight: 700, color: "#FFD54F" }));
+  if (l.units.some((u) => u.coming)) bc.append(css(mk("div", "", "（3-3 開放後，會再出現新的大魔王）"), { marginTop: 10, fontSize: 16, opacity: 0.75 }));
+}
+
+/* ---------- boss battle ---------- */
+let B = null;
+function screenBoss(u) {
+  const m = MONSTERS[u.monster];
+  ctx = newCtx();
+  ctx.stage.style.background = m.bg;
+  const arena = div(0, 0, 1333, 470, "arena");
+  arena.innerHTML = `<svg viewBox="0 0 1333 470" style="position:absolute;inset:0;width:100%;height:100%">
+    <ellipse cx="260" cy="440" rx="200" ry="34" fill="rgba(0,0,0,.18)"/>
+    <ellipse cx="1040" cy="440" rx="230" ry="38" fill="rgba(0,0,0,.18)"/>
+    <ellipse cx="470" cy="230" rx="80" ry="22" fill="rgba(255,255,255,.3)"/>
+    <ellipse cx="660" cy="70" rx="120" ry="30" fill="rgba(255,255,255,.3)"/></svg>`;
+  div(34, 24, null, null, "btitle").textContent = `⚔️ 大魔王挑戰：${m.name}`;
+  const flee = mk("button", "flee", "🏃 先撤退");
+  flee.onclick = () => { if (!B || B.over || confirm("要先撤退嗎？這次的戰鬥不會保留。")) show({ screen: "lesson", lesson: u.lesson.id }); };
+  ctx.layer.append(flee);
+  const heroW = div(120, 140, 260, 334, "fighter");
+  const heroIn = mk("div", "bob"); css(heroIn, { width: "100%", height: "100%" }); heroIn.innerHTML = HERO_SVG;
+  heroW.append(heroIn);
+  const monW = div(860, 110, 330, 352, "fighter");
+  const monIn = mk("div", m.idle); css(monIn, { width: "100%", height: "100%" }); monIn.innerHTML = m.svg;
+  monW.append(monIn);
+  div(120, 92, 330, 30, "abs", { color: "#fff", fontWeight: 700, fontSize: 22, textShadow: "0 2px 3px rgba(0,0,0,.4)" }).textContent = "科學小勇士";
+  const hearts = div(260, 84, 340, 44, "hearts");
+  const hp = div(860, 70, 330, 70, "hpbox");
+  const qp = div(50, 482, 1233, 252, "qpanel");
+  B = { u, m, heroW, monW, hearts, hp, qp, max: 6, life: 6, total: u.questions.length, left: u.questions.length,
+    queue: shuffle(u.questions.map((q, i) => ({ i, q: q[0], a: q[1], wrong: q[2], exp: q[3] }))), n: 0, misses: 0, over: false, busy: false };
+  drawHearts(); drawHP();
+  const p = overlayPanel();
+  const av = mk("div"); css(av, { width: 200, height: 210, margin: "0 auto" }); av.innerHTML = m.svg;
+  p.append(av, mk("h2", "", `${m.name} 出現了！`), mk("p", "", `「${m.intro}」\n共 ${B.total} 題・小勇士有 ${B.max} 顆愛心`));
+  p.lastChild.style.whiteSpace = "pre-line";
+  const go = mk("button", "btn red", "⚔️ 開始戰鬥！");
+  go.onclick = () => { unlockAudio(); p.close(); nextQ(); };
+  p.append(go);
+}
+function drawHearts(lostIdx) {
+  B.hearts.innerHTML = "";
+  for (let i = 0; i < B.max; i++) {
+    const s = mk("span", i === lostIdx ? "lost" : "", i < B.life ? "❤️" : "🤍");
+    B.hearts.append(s);
+  }
+}
+function drawHP() {
+  B.hp.innerHTML = "";
+  B.hp.append(mk("div", "", `${B.m.name}　HP ${B.left} / ${B.total}`));
+  const bar = mk("div", "hpbar"), f = mk("div", "hpfill");
+  f.style.width = (100 * B.left) / B.total + "%";
+  bar.append(f); B.hp.append(bar);
+}
+function nextQ() {
+  if (B.left <= 0) return victory();
+  if (B.life <= 0) return defeat();
+  const q = B.queue.shift();
+  B.cur = q; B.n++; B.busy = false;
+  const qp = B.qp;
+  qp.innerHTML = "";
+  qp.append(mk("div", "qno", `第 ${B.n} 回合・還要答對 ${B.left} 題`), mk("div", "qtext", q.q));
+  const opts = mk("div", "opts");
+  for (const o of shuffle([q.a, ...q.wrong])) {
+    const b = mk("button", "opt", o);
+    b.onclick = () => answer(b, o);
+    opts.append(b);
+  }
+  qp.append(opts);
+  const fb = mk("div", "fb");
+  qp.append(fb);
+  B.fb = fb; B.opts = opts;
+}
+function answer(btn, o) {
+  if (B.busy || B.over) return;
+  B.busy = true;
+  const q = B.cur, ok = o === q.a;
+  for (const b of B.opts.children) {
+    b.disabled = true;
+    if (b.textContent === q.a) b.classList.add("right");
+    else if (b === btn) b.classList.add("wrong");
+    else b.classList.add("dim");
+  }
+  if (ok) {
+    B.left--;
+    attack(B.heroW, B.monW, "⭐", "lungeR", () => { drawHP(); sound("ok"); });
+    sound("zap");
+    setTimeout(() => feedback(true, `✅ 答對了！小勇士發動攻擊！${q.exp}`), 650);
+  } else {
+    B.life--; B.misses++;
+    B.queue.push(q);
+    logMistake({ unit: B.u.id, src: "大魔王", page: B.m.name, prompt: q.q, answer: q.a, chosen: o });
+    attack(B.monW, B.heroW, B.m.atk, "lungeL", () => { drawHearts(B.life); sound("hurt"); });
+    setTimeout(() => feedback(false, `❌ 被${B.m.name}反擊了！正確答案是「${q.a}」。${q.exp}`), 650);
+  }
+}
+function attack(fromW, toW, emoji, lunge, onHit) {
+  fromW.classList.remove(lunge); void fromW.offsetWidth; fromW.classList.add(lunge);
+  const fx = parseFloat(fromW.style.left) + parseFloat(fromW.style.width) / 2, fy = parseFloat(fromW.style.top) + 120;
+  const tx = parseFloat(toW.style.left) + parseFloat(toW.style.width) / 2 - 30, ty = parseFloat(toW.style.top) + 120;
+  const pj = mk("div", "proj", emoji);
+  css(pj, { left: fx - 30, top: fy - 30 });
+  ctx.stage.append(pj);
+  requestAnimationFrame(() => requestAnimationFrame(() => { css(pj, { left: tx, top: ty, transform: "scale(1.4) rotate(200deg)" }); }));
+  setTimeout(() => {
+    pj.remove();
+    toW.classList.remove("hit"); void toW.offsetWidth; toW.classList.add("hit");
+    const d = mk("div", "dmg", "-1"); css(d, { left: tx + 20, top: ty - 30 }); ctx.stage.append(d);
+    setTimeout(() => d.remove(), 1000);
+    onHit();
+  }, 470);
+}
+function feedback(ok, msg) {
+  B.opts.style.visibility = "hidden";
+  const fb = B.fb;
+  fb.className = "fb show " + (ok ? "ok" : "no");
+  fb.innerHTML = "";
+  fb.append(mk("div", "msg", msg));
+  const b = mk("button", "", B.left <= 0 ? "勝利！▶" : B.life <= 0 ? "繼續 ▶" : "下一題 ▶");
+  b.onclick = nextQ;
+  fb.append(b);
+}
+function victory() {
+  B.over = true;
+  const stars = B.life >= 5 ? 3 : B.life >= 3 ? 2 : 1;
+  const r = saved.boss[B.u.id] || (saved.boss[B.u.id] = { tries: 0, wins: 0, best: 0 });
+  r.tries++; r.wins++; r.best = Math.max(r.best || 0, stars); r.last = Date.now(); persist();
+  B.monW.style.transition = "opacity 1s, transform 1s"; B.monW.style.opacity = 0; B.monW.style.transform = "scale(.3) rotate(30deg)";
+  sound("win"); confetti();
+  const p = overlayPanel();
+  p.append(mk("h2", "", `🏆 打敗${B.m.name}了！`));
+  const stx = mk("div", "stars");
+  for (let i = 0; i < 3; i++) stx.append(mk("span", i < stars ? "" : "off", "⭐"));
+  p.append(stx, mk("p", "", `剩下 ${B.life} 顆愛心・答錯 ${B.misses} 次`));
+  const back = mk("button", "btn primary", `回到${B.u.lesson.no}`);
+  back.onclick = () => show({ screen: "lesson", lesson: B.u.lesson.id });
+  p.append(back);
+}
+function defeat() {
+  B.over = true;
+  const r = saved.boss[B.u.id] || (saved.boss[B.u.id] = { tries: 0, wins: 0, best: 0 });
+  r.tries++; r.last = Date.now(); persist();
+  sound("lose");
+  const p = overlayPanel();
+  p.append(mk("h2", "", "😵 小勇士沒力氣了…"),
+    mk("p", "", `${B.m.name}太強了！答錯的題目都記下來了，\n回去複習心智圖，再來挑戰吧！`));
+  p.lastChild.style.whiteSpace = "pre-line";
+  const again = mk("button", "btn red", "⚔️ 再挑戰一次");
+  again.onclick = () => renderScreen();
+  const back = mk("button", "btn ghost", "📖 回去複習");
+  back.onclick = () => show({ screen: "lesson", lesson: B.u.lesson.id });
+  p.append(again, back);
+}
+
+/* ---------- parent admin ---------- */
+let adminOK = false, adminFilter = "all";
+function gate() {
+  const a = 12 + Math.floor(Math.random() * 8), b = 12 + Math.floor(Math.random() * 8);
+  const p = overlayPanel();
+  p.append(mk("h2", "", "🔒 家長驗證"), mk("p", "", `請算出：${a} × ${b} = ?`));
+  const inp = mk("input"); inp.type = "text"; inp.inputMode = "numeric"; inp.autocomplete = "off";
+  p.append(inp, mk("br"));
+  const ok = mk("button", "btn primary", "進入後台");
+  const cancel = mk("button", "btn ghost", "取消");
+  const check = () => {
+    if (+inp.value.trim() === a * b) { adminOK = true; p.close(); show({ screen: "admin" }); }
+    else { p.classList.remove("shakeX"); void p.offsetWidth; p.classList.add("shakeX"); inp.value = ""; }
+  };
+  ok.onclick = check;
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+  cancel.onclick = p.close;
+  p.append(cancel, ok);
+  setTimeout(() => inp.focus(), 50);
+}
+function screenAdmin() {
+  ctx = newCtx("white");
+  div(50, 28, 700, 60, "abs", { fontSize: 40, fontWeight: 700, color: "#1B4F72", whiteSpace: "nowrap" }).textContent = "🔒 家長後台";
+  const close = mk("button", "abtn", "✕ 離開後台");
+  css(close, { position: "absolute", right: 50, top: 34, fontSize: 20 });
+  close.onclick = () => { adminOK = false; show({ screen: "home" }); };
+  ctx.layer.append(close);
+
+  // progress panel
+  const left = div(50, 105, 420, 620, "panelBox scroll", { padding: "18px 22px" });
+  left.append(mk("h4", "", "📊 學習進度"));
+  for (const l of LESSONS) {
+    for (const u of readyUnits(l)) {
+      const r = saved.boss[u.id], m = MONSTERS[u.monster];
+      const pr = mk("div", "prow");
+      pr.innerHTML = "";
+      pr.append(mk("b", "", `${u.crumb}`), mk("br"),
+        document.createTextNode(`心智圖：完成 ${doneActs(u).length}/${acts(u).length} 關・★${unitStars(u)}/${acts(u).length * 3}`), mk("br"),
+        document.createTextNode(`${m.name}：${r ? (r.wins ? `已打敗 ${r.wins} 次（挑戰 ${r.tries} 次，最佳 ${"⭐".repeat(r.best || 1)}）` : `挑戰 ${r.tries} 次，尚未打敗`) : "尚未挑戰"}`));
+      left.append(pr);
+    }
+    if (l.coming) { const pr = mk("div", "prow", `${l.no} ${l.title}：即將開放`); pr.style.color = "#90A4AE"; left.append(pr); }
+  }
+  const tools = mk("div"); css(tools, { display: "flex", flexDirection: "column", gap: "10px", marginTop: "16px" });
+  const unlock = mk("button", "abtn" + (saved.unlockBoss ? " on" : ""), saved.unlockBoss ? "🔓 大魔王已提前開放（點一下關閉）" : "🔓 提前開放大魔王（測試用）");
+  unlock.onclick = () => { saved.unlockBoss = !saved.unlockBoss; persist(); renderScreen(); };
+  const resetAll = mk("button", "abtn warn", "🗑 重設全部進度與紀錄");
+  resetAll.onclick = () => {
+    if (confirm("確定要清除所有星星、大魔王紀錄和錯題紀錄嗎？")) {
+      saved.stars = {}; saved.boss = {}; saved.mistakes = {}; saved.unlockBoss = false; persist(); renderScreen();
+    }
+  };
+  tools.append(unlock, resetAll);
+  left.append(tools);
+
+  // mistakes panel
+  const right = div(490, 105, 793, 620, "panelBox", { padding: "18px 20px" });
+  const top = mk("div"); css(top, { display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" });
+  const all = Object.values(saved.mistakes);
+  top.append(css(mk("h4", "", `📝 錯題紀錄（${all.length} 題）`), { marginRight: "auto" }));
+  const filters = [["all", "全部"], ...readyUnits(LESSONS[0]).map((u) => [u.id, u.id]), ["心智圖", "心智圖"], ["大魔王", "大魔王"]];
+  for (const [k, t] of filters) {
+    const b = mk("button", "abtn" + (adminFilter === k ? " on" : ""), t);
+    b.onclick = () => { adminFilter = k; renderScreen(); };
+    top.append(b);
+  }
+  right.append(top);
+  const acts2 = mk("div"); css(acts2, { display: "flex", gap: "10px", margin: "10px 0" });
+  const exp = mk("button", "abtn", "⬇ 匯出 CSV");
+  exp.onclick = exportCSV;
+  const clr = mk("button", "abtn warn", "清除錯題紀錄");
+  clr.onclick = () => { if (confirm("確定要清除所有錯題紀錄嗎？")) { saved.mistakes = {}; persist(); renderScreen(); } };
+  acts2.append(exp, clr);
+  right.append(acts2);
+  const list = mk("div", "scroll");
+  css(list, { position: "absolute", left: 20, right: 20, top: 128, bottom: 18 });
+  const rows = all.filter((m) => adminFilter === "all" || m.unit === adminFilter || m.src === adminFilter)
+    .sort((a, b) => b.count - a.count || (b.last || 0) - (a.last || 0));
+  const head = mk("div", "mrow head");
+  for (const t of ["單元・來源", "題目", "正確答案", "孩子選的", "次數"]) head.append(mk("div", "", t));
+  list.append(head);
+  if (!rows.length) list.append(mk("div", "empty", all.length ? "這個分類沒有錯題 👍" : "目前還沒有錯題紀錄 👍"));
+  for (const m of rows) {
+    const r = mk("div", "mrow");
+    const c1 = mk("div");
+    c1.append(mk("div", "", m.unit));
+    const tag = mk("span", "tag", m.src); tag.style.background = m.src === "大魔王" ? COL[1] : COL[5];
+    c1.append(tag);
+    const c2 = mk("div");
+    c2.append(mk("div", "", m.prompt), css(mk("div", "", `${m.page}・最後一次 ${fmtTime(m.last)}`), { fontSize: "14px", color: "#90A4AE" }));
+    const c4 = mk("div", "bad", Object.entries(m.chosen).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k}×${v}`).join("、"));
+    r.append(c1, c2, mk("div", "ans", m.answer), c4, mk("div", "cnt", String(m.count)));
+    list.append(r);
+  }
+  right.append(list);
+}
+function exportCSV() {
+  const esc = (s) => `"${String(s).replace(/"/g, '""')}"`;
+  const lines = [["單元", "來源", "頁面", "題目", "正確答案", "孩子選的", "錯誤次數", "第一次", "最後一次"].map(esc).join(",")];
+  for (const m of Object.values(saved.mistakes).sort((a, b) => b.count - a.count)) {
+    lines.push([m.unit, m.src, m.page, m.prompt, m.answer,
+      Object.entries(m.chosen).map(([k, v]) => `${k}×${v}`).join("、"), m.count, fmtTime(m.first), fmtTime(m.last)].map(esc).join(","));
+  }
+  const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  const d = new Date();
+  a.href = URL.createObjectURL(blob);
+  a.download = `錯題紀錄_${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}.csv`;
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* =====================================================================
+   11. nav bar & layout
+   ===================================================================== */
+function navBtn(html, label, onclick, disabled, cls) {
+  const b = mk("button", cls || "");
+  b.innerHTML = html;
+  if (label) b.setAttribute("aria-label", label);
+  b.onclick = onclick;
+  b.disabled = !!disabled;
+  return b;
 }
 function renderNav() {
-  const dots = $("#dots");
-  dots.innerHTML = "";
-  PAGES.forEach((p, i) => {
-    const b = mk("button", "dot" + (i === cur ? " cur" : "") + (saved.stars[i] ? " done" : ""), String(i + 1));
-    b.title = p.name; b.setAttribute("aria-label", `第 ${i + 1} 頁 ${p.name}`);
-    b.onclick = () => go(i);
-    dots.append(b);
-  });
-  $("#prev").disabled = cur === 0;
-  $("#next").disabled = cur === PAGES.length - 1;
-  const act = PAGES[cur].kind === "act";
-  $("#hint").disabled = !act;
-  $("#reset").disabled = !act;
-  $("#mute").textContent = saved.muted ? "🔇" : "🔊";
+  const nav = $("#nav");
+  nav.innerHTML = "";
+  const sp1 = mk("span", "sp"), sp2 = mk("span", "sp");
+  nav.append(sp1);
+  const loc = saved.loc || { screen: "home" };
+  nav.append(navBtn('🏠<span class="t"> 首頁</span>', "首頁", () => { adminOK = false; show({ screen: "home" }); }, loc.screen === "home"));
+  if (loc.screen === "unit" && curUnit) {
+    nav.append(navBtn(`🗺️<span class="t"> ${curUnit.lesson.no}</span>`, "課程地圖", () => show({ screen: "lesson", lesson: curUnit.lesson.id })));
+    nav.append(navBtn("◀", "上一頁", () => goPage(curPage - 1), curPage === 0));
+    const dots = mk("div", "dots");
+    const st = saved.stars[curUnit.id] || {};
+    curUnit.pages.forEach((p, i) => {
+      const b = mk("button", "dot" + (i === curPage ? " cur" : "") + (st[p.id] ? " done" : ""), String(i + 1));
+      b.title = p.name; b.setAttribute("aria-label", `第 ${i + 1} 頁 ${p.name}`);
+      b.onclick = () => goPage(i);
+      dots.append(b);
+    });
+    nav.append(dots);
+    nav.append(navBtn("▶", "下一頁", () => goPage(curPage + 1), curPage === curUnit.pages.length - 1));
+    const act = curUnit.pages[curPage].kind === "act";
+    nav.append(navBtn('💡<span class="t"> 提示</span>', "提示", () => { unlockAudio(); giveHint(); }, !act));
+    nav.append(navBtn('🔄<span class="t"> 重來</span>', "重來", () => renderScreen(), !act));
+  } else if (loc.screen === "boss" && curUnit) {
+    nav.append(navBtn(`🗺️<span class="t"> ${curUnit.lesson.no}</span>`, "課程地圖", () => {
+      if (!B || B.over || confirm("要先撤退嗎？這次的戰鬥不會保留。")) show({ screen: "lesson", lesson: curUnit.lesson.id });
+    }));
+  }
+  nav.append(navBtn(saved.muted ? "🔇" : "🔊", "聲音開關", () => { saved.muted = !saved.muted; persist(); unlockAudio(); renderNav(); }));
+  nav.append(sp2);
 }
 function fit() {
   const vp = $("#viewport"), vw = vp.clientWidth, vh = vp.clientHeight;
@@ -862,21 +1835,21 @@ function fit() {
   const ox = (vw - 1333 * scale) / 2, oy = (vh - 750 * scale) / 2;
   $("#stage").style.transform = `translate(${ox}px, ${oy}px) scale(${scale})`;
 }
-$("#prev").onclick = () => go(cur - 1);
-$("#next").onclick = () => go(cur + 1);
-$("#hint").onclick = () => { unlockAudio(); giveHint(); };
-$("#reset").onclick = () => render();
-$("#mute").onclick = () => { saved.muted = !saved.muted; persist(); unlockAudio(); renderNav(); };
 window.addEventListener("resize", fit);
 window.addEventListener("orientationchange", () => setTimeout(fit, 200));
 document.addEventListener("keydown", (e) => {
-  if (e.target && e.target.classList && (e.target.classList.contains("card") || e.target.classList.contains("slot"))) return;
-  if (e.key === "ArrowRight") go(cur + 1);
-  if (e.key === "ArrowLeft") go(cur - 1);
+  const t = e.target;
+  if (t && (t.tagName === "INPUT" || (t.classList && (t.classList.contains("card") || t.classList.contains("slot"))))) return;
+  if (saved.loc && saved.loc.screen === "unit") {
+    if (e.key === "ArrowRight") goPage(curPage + 1);
+    if (e.key === "ArrowLeft") goPage(curPage - 1);
+  }
   if (e.key === "Escape") clearSelect();
 });
 document.addEventListener("gesturestart", (e) => e.preventDefault());
-render();
+if (saved.loc && (saved.loc.screen === "boss" || saved.loc.screen === "admin")) saved.loc = saved.loc.unit && UNITS[saved.loc.unit]
+  ? { screen: "lesson", lesson: UNITS[saved.loc.unit].lesson.id } : { screen: "home" };
+renderScreen();
 </script>
 </body>
 </html>
